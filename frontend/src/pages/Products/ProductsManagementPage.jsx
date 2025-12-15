@@ -1,8 +1,7 @@
-import React from 'react';
-import ProductsManagementForm from '@/components/features/products/ProductsManagementForm';
+import ProductManagementForm from '@/components/features/products/ProductManagementForm';
 
 const ProductsManagementPage = () => {
-  return <ProductsManagementForm />;
+  return <ProductManagementForm />;
 };
 
 export default ProductsManagementPage;

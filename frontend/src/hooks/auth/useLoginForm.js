@@ -1,47 +1,94 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@/store/authStore';
+import { getRolePermissions } from '@/utils/roles';
 
 export const useLoginForm = () => {
-  const [formData, setFormData] = useState({
-    email: '',
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [generalError, setGeneralError] = useState('');
+  const [fieldValues, setFieldValues] = useState({
+    login: '',
     password: ''
   });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    watch
+  } = useForm();
+
+  // Watch form values
+  const loginValue = watch('login', '');
+  const passwordValue = watch('password', '');
+
+  // Update field values for button disable logic
+  useEffect(() => {
+    setFieldValues({
+      login: loginValue,
+      password: passwordValue
+    });
+  }, [loginValue, passwordValue]);
+
+  const handleFieldChange = (fieldName) => (e) => {
+    setFieldValues(prev => ({
       ...prev,
-      [name]: value
+      [fieldName]: e.target.value
     }));
+    // Clear general error when user starts typing
+    if (generalError) {
+      setGeneralError('');
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setErrors({});
+  const isButtonDisabled = !fieldValues.login || !fieldValues.password || isSubmitting;
 
-    // Validaciones básicas
-    const newErrors = {};
-    if (!formData.email) newErrors.email = 'El correo es requerido';
-    if (!formData.password) newErrors.password = 'La contraseña es requerida';
+  const onSubmit = async (data) => {
+    setGeneralError('');
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsLoading(false);
-      return;
+    try {
+      // TODO: Reemplazar con llamada real al backend
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simulación de respuesta del backend
+      // En producción, esto vendría del API
+      const mockUser = {
+        id: 1,
+        nombre: 'Administrador del Sistema',
+        email: data.login,
+        role: {
+          id: 1,
+          nombre: 'Administrador',
+          permisos: getRolePermissions('Administrador'),
+        },
+        estado: true,
+      };
+
+      const mockToken = 'mock-jwt-token-12345';
+
+      // Guardar en el store
+      setAuth(mockUser, mockToken);
+
+      // Redirigir al dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error en login:', error);
+      setGeneralError('Credenciales inválidas. Por favor intenta de nuevo.');
     }
-
-    // Aquí iría la lógica de autenticación con el backend
-    console.log('Login:', formData);
-    setIsLoading(false);
   };
 
   return {
-    formData,
+    register,
+    handleSubmit,
+    onSubmit,
     errors,
-    isLoading,
-    handleChange,
-    handleSubmit
+    isSubmitting,
+    generalError,
+    handleFieldChange,
+    isButtonDisabled
   };
 };
+
+export default useLoginForm;

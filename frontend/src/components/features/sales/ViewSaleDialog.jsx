@@ -18,6 +18,8 @@ import {
 } from '@/components/ui/table/Table';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 import { getSaleStatusBadge, getPaymentMethodBadge } from '@/utils/badges';
+import { Printer } from 'lucide-react';
+import { printReceipt } from '@/utils/printReceipt';
 
 export const ViewSaleDialog = ({ 
   isOpen, 
@@ -43,6 +45,13 @@ export const ViewSaleDialog = ({
             <Label className="text-gray-600 text-sm">Usuario</Label>
             <p className="font-medium">{sale.usuario}</p>
           </div>
+          
+          {sale.mesero && (
+            <div>
+              <Label className="text-gray-600 text-sm">Mesero</Label>
+              <p className="font-medium">{sale.mesero}</p>
+            </div>
+          )}
           
           <div>
             <Label className="text-gray-600 text-sm">Método de Pago</Label>
@@ -99,6 +108,13 @@ export const ViewSaleDialog = ({
         </div>
       </ModalBody>
       <ModalFooter>
+        <Button 
+          onClick={() => printReceipt(sale)}
+          className="bg-lime-600 hover:bg-lime-700 text-white"
+        >
+          <Printer className="h-4 w-4 mr-2" />
+          Imprimir Comprobante
+        </Button>
         <Button onClick={onClose} variant="ghost">
           Cerrar
         </Button>

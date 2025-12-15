@@ -10,21 +10,24 @@ import {
   LogOut,
   BarChart3,
   Settings,
-  FolderTree
+  FolderTree,
+  UserCog,
+  Shield,
+  ClipboardList,
+  DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/authStore';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  // TODO: Conectar con el estado real del usuario autenticado
-  const isAuthenticated = true;
-  const userName = 'Administrador';
+  
+  // Obtener estado de autenticación del store
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleLogout = () => {
-    // TODO: Implementar lógica de logout
-    console.log('Cerrando sesión...');
+    logout();
     navigate('/auth/login');
   };
 
@@ -60,11 +63,32 @@ const Navbar = () => {
               <span>Ventas</span>
             </Link>
             <Link 
+              to="/pedidos" 
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
+            >
+              <ClipboardList className="h-4 w-4" />
+              <span>Pedidos</span>
+            </Link>
+            <Link 
+              to="/caja" 
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
+            >
+              <DollarSign className="h-4 w-4" />
+              <span>Caja</span>
+            </Link>
+            <Link 
               to="/productos" 
               className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
             >
               <Package className="h-4 w-4" />
               <span>Productos</span>
+            </Link>
+            <Link 
+              to="/clientes" 
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
+            >
+              <Users className="h-4 w-4" />
+              <span>Clientes</span>
             </Link>
             <Link 
               to="/categorias" 
@@ -77,8 +101,15 @@ const Navbar = () => {
               to="/usuarios" 
               className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
             >
-              <Users className="h-4 w-4" />
+              <UserCog className="h-4 w-4" />
               <span>Usuarios</span>
+            </Link>
+            <Link 
+              to="/roles" 
+              className="flex items-center space-x-2 px-3 py-2 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600 transition-colors"
+            >
+              <Shield className="h-4 w-4" />
+              <span>Roles</span>
             </Link>
             <Link 
               to="/reportes" 
@@ -95,8 +126,8 @@ const Navbar = () => {
               <>
                 <div className="hidden md:flex items-center space-x-3">
                   <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{userName}</p>
-                    <p className="text-xs text-gray-500">Admin</p>
+                    <p className="text-sm font-medium text-gray-900">{user?.nombre || 'Usuario'}</p>
+                    <p className="text-xs text-gray-500">{user?.role?.nombre || 'Sin rol'}</p>
                   </div>
                   <button
                     onClick={() => navigate('/configuracion')}
@@ -153,12 +184,36 @@ const Navbar = () => {
               <span>Ventas</span>
             </Link>
             <Link
+              to="/pedidos"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600"
+            >
+              <ClipboardList className="h-5 w-5" />
+              <span>Pedidos</span>
+            </Link>
+            <Link
+              to="/caja"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600"
+            >
+              <DollarSign className="h-5 w-5" />
+              <span>Caja</span>
+            </Link>
+            <Link
               to="/productos"
               onClick={() => setIsMenuOpen(false)}
               className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600"
             >
               <Package className="h-5 w-5" />
               <span>Productos</span>
+            </Link>
+            <Link
+              to="/clientes"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600"
+            >
+              <Users className="h-5 w-5" />
+              <span>Clientes</span>
             </Link>
             <Link
               to="/categorias"
@@ -173,7 +228,7 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
               className="flex items-center space-x-2 px-3 py-3 rounded-lg text-gray-700 hover:bg-lime-50 hover:text-lime-600"
             >
-              <Users className="h-5 w-5" />
+              <UserCog className="h-5 w-5" />
               <span>Usuarios</span>
             </Link>
             <Link
@@ -189,8 +244,8 @@ const Navbar = () => {
               <>
                 <div className="border-t border-gray-200 pt-4 mt-4">
                   <div className="px-3 py-2">
-                    <p className="text-sm font-medium text-gray-900">{userName}</p>
-                    <p className="text-xs text-gray-500">Admin</p>
+                    <p className="text-sm font-medium text-gray-900">{user?.nombre || 'Usuario'}</p>
+                    <p className="text-xs text-gray-500">{user?.role?.nombre || 'Sin rol'}</p>
                   </div>
                   <button
                     onClick={() => {

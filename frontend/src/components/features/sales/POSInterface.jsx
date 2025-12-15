@@ -14,6 +14,8 @@ export const POSInterface = ({
   products,
   cart,
   selectedPaymentMethod,
+  selectedWaiter,
+  selectedCustomer,
   cartSubtotal,
   cartTotal,
   isLoading,
@@ -23,6 +25,8 @@ export const POSInterface = ({
   onUpdateQuantity,
   onClearCart,
   onPaymentMethodChange,
+  onWaiterChange,
+  onCustomerChange,
   onCompleteSale
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,6 +224,38 @@ export const POSInterface = ({
                         {name}
                       </option>
                     ))}
+                  </Select>
+                </div>
+
+                {/* Mesero asignado */}
+                <div className="mb-4">
+                  <Label>Mesero (Opcional)</Label>
+                  <Select
+                    value={selectedWaiter}
+                    onChange={(e) => onWaiterChange(e.target.value)}
+                  >
+                    <option value="">Sin asignar</option>
+                    <option value="1">Carlos Ramírez</option>
+                    <option value="2">Ana Torres</option>
+                    <option value="3">Luis Martínez</option>
+                    <option value="4">Sofía Rodríguez</option>
+                    <option value="5">Miguel Álvarez</option>
+                  </Select>
+                </div>
+
+                {/* Cliente asociado */}
+                <div className="mb-4">
+                  <Label>Cliente (Opcional)</Label>
+                  <Select
+                    value={selectedCustomer}
+                    onChange={(e) => onCustomerChange(e.target.value)}
+                  >
+                    <option value="">Sin cliente</option>
+                    <option value="1">María García Rodríguez</option>
+                    <option value="2">Carlos Andrés Pérez</option>
+                    <option value="3">Ana María López</option>
+                    <option value="4">Juan David Martínez</option>
+                    <option value="5">Laura Camila Sánchez</option>
                   </Select>
                 </div>
 

@@ -9,18 +9,21 @@ import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
 const LoginForm = ({ className, ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const { 
-    formData,
-    errors, 
-    isLoading, 
-    handleChange, 
-    handleSubmit 
-    } = useLoginForm();
+  const {
+    register,
+    handleSubmit,
+    onSubmit,
+    errors,
+    isSubmitting,
+    generalError,
+    handleFieldChange,
+    isButtonDisabled
+  } = useLoginForm();
     
- return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lime-50 to-green-50 p-4">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className={cn(
           "w-full max-w-md mx-auto rounded-xl shadow-lg p-8 bg-white",
           className
@@ -36,43 +39,45 @@ const LoginForm = ({ className, ...props }) => {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Correo electrónico</Label>
+            <Label htmlFor="login">Usuario, documento o correo</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
-                id="email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="correo@ejemplo.com"
-                autoComplete="email"
+                id="login"
+                type="text"
+                placeholder="Usuario, documento o correo"
+                autoComplete="username"
                 className="pl-10 h-12"
+                {...register("login", {
+                  required: "Este campo es obligatorio",
+                  onChange: handleFieldChange("login")
+                })}
               />
             </div>
-            {errors.email && (
-              <span className="text-red-500 text-sm">{errors.email}</span>
+            {errors.login && (
+              <span className="text-red-500 text-sm">{errors.login.message}</span>
             )}
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label htmlFor="password">Contraseña</Label>
-              <a href="#" className="text-sm text-gray-500 hover:underline">
+              <Link to="/auth/forgot-password" className="text-sm text-gray-500 hover:underline">
                 ¿Olvidaste tu contraseña?
-              </a>
+              </Link>
             </div>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
                 placeholder="Contraseña"
                 autoComplete="current-password"
                 className="pl-10 pr-10 h-12"
+                {...register("password", {
+                  required: "La contraseña es obligatoria",
+                  onChange: handleFieldChange("password")
+                })}
               />
               <Button
                 type="button"
@@ -90,16 +95,23 @@ const LoginForm = ({ className, ...props }) => {
               </Button>
             </div>
             {errors.password && (
-              <span className="text-red-500 text-sm">{errors.password}</span>
+              <span className="text-red-500 text-sm">{errors.password.message}</span>
             )}
           </div>
+
+          {generalError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <span className="text-red-600 text-sm">{generalError}</span>
+            </div>
+          )}
 
           <Button
             type="submit"
             className="w-full h-12 text-base bg-black text-white hover:bg-gray-900"
-            disabled={isLoading}
+            disabled={isButtonDisabled}
+            title={isButtonDisabled ? "Debes llenar todos los campos para poder iniciar sesión" : ""}
           >
-            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </Button>
 
           <div className="text-center text-sm mt-4">

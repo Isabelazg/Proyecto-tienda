@@ -82,6 +82,15 @@ export const getRoleBadge = (roleId) => {
   );
 };
 
+// Badge para estados de cliente
+export const getCustomerStatusBadge = (estado) => {
+  return (
+    <Badge variant={estado ? 'success' : 'error'}>
+      {estado ? 'Activo' : 'Inactivo'}
+    </Badge>
+  );
+};
+
 // Badge genérico con contador
 export const getCountBadge = (count, label = 'items') => {
   return (

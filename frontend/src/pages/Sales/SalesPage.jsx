@@ -1,8 +1,7 @@
-import React from 'react';
-import { SalesManagementForm } from '@/components/features/sales/SalesManagementForm';
+import SaleManagementForm from '@/components/features/sales/SaleManagementForm';
 
 const SalesPage = () => {
-  return <SalesManagementForm />;
+  return <SaleManagementForm />;
 };
 
 export default SalesPage;
