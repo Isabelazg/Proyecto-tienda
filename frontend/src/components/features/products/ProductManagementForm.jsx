@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import { Pagination } from '@/components/common/Pagination/Pagination';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { ProductFiltersBar } from './ProductFiltersBar';
 import { ProductDataTable } from './ProductDataTable';
 import { CreateProductDialog } from './CreateProductDialog';
@@ -133,7 +133,7 @@ const ProductManagementForm = () => {
 
             {/* Pagination */}
             {!isLoading && products.length > 0 && (
-              <Pagination
+              <TablePagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 totalItems={pagination.totalItems}

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { 
@@ -9,7 +8,9 @@ import {
   ModalFooter 
 } from '@/components/ui/modal/Modal';
 import { formatDate } from '@/utils/format';
-import { FolderTree, Package, CheckCircle, Calendar } from 'lucide-react';
+import { Package, CheckCircle, Calendar } from 'lucide-react';
+import { DetailsHeader, StatCard } from '@/components/common';
+import { ENTITY_CONFIG } from '@/config';
 
 export const ViewCategoryDialog = ({ 
   isOpen, 
@@ -18,26 +19,24 @@ export const ViewCategoryDialog = ({
 }) => {
   if (!category) return null;
 
+  const entityConfig = ENTITY_CONFIG.category;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalHeader onClose={onClose}>
-        <ModalTitle>Detalles de la Categoría</ModalTitle>
+        <ModalTitle>Detalles de la {entityConfig.name}</ModalTitle>
       </ModalHeader>
 
       <ModalBody>
         <div className="space-y-6">
           {/* Encabezado con icono */}
-          <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-            <div className="bg-lime-100 p-4 rounded-xl">
-              <FolderTree className="h-8 w-8 text-lime-600" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-gray-900">{category.nombre}</h3>
-              <p className="text-sm text-gray-500 mt-1">
-                Categoría de productos
-              </p>
-            </div>
-          </div>
+          <DetailsHeader 
+            title={category.nombre}
+            subtitle={entityConfig.name + ' de productos'}
+            icon={entityConfig.icon}
+            iconBgColor={entityConfig.iconBgColor}
+            iconColor={entityConfig.iconColor}
+          />
 
           {/* Información General */}
           <div>
@@ -67,27 +66,23 @@ export const ViewCategoryDialog = ({
 
           {/* Estadísticas de Productos */}
           <div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-3">Productos Asociados</h4>
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Productos Asociados</h4>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <Label className="flex items-center gap-2 text-blue-700">
-                  <Package className="h-4 w-4" />
-                  Total de Productos
-                </Label>
-                <p className="text-3xl font-bold text-blue-900 mt-2">
-                  {category.total_productos}
-                </p>
-              </div>
+              <StatCard
+                label="Total de Productos"
+                value={category.total_productos}
+                icon={Package}
+                bgColor="bg-blue-50 dark:bg-blue-900/20"
+                textColor="text-blue-700 dark:text-blue-400"
+              />
 
-              <div className="bg-green-50 p-4 rounded-lg">
-                <Label className="flex items-center gap-2 text-green-700">
-                  <CheckCircle className="h-4 w-4" />
-                  Productos Activos
-                </Label>
-                <p className="text-3xl font-bold text-green-900 mt-2">
-                  {category.productos_activos}
-                </p>
-              </div>
+              <StatCard
+                label="Productos Activos"
+                value={category.productos_activos}
+                icon={CheckCircle}
+                bgColor="bg-green-50 dark:bg-green-900/20"
+                textColor="text-green-700 dark:text-green-400"
+              />
             </div>
           </div>
         </div>

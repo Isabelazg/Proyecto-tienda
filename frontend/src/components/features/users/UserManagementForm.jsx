@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import { Pagination } from '@/components/common/Pagination/Pagination';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { UserFiltersBar } from './UserFiltersBar';
 import { UsersDataTable } from './UserDataTable';
 import { CreateUserDialog } from './CreateUserDialog';
@@ -60,7 +60,7 @@ const UserManagementForm = () => {
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
             <UsersDataTable users={users} isLoading={isLoading} sortConfig={sortConfig} onSort={handleSort} onView={handleOpenViewModal} onEdit={handleOpenEditModal} onDelete={handleOpenDeleteModal} onToggleStatus={toggleUserStatus} onCreateNew={handleOpenCreateModal} />
           </div>
-          {pagination.totalPages > 1 && <div className="mt-6"><Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={handlePageChange} /></div>}
+          {pagination.totalPages > 1 && <div className="mt-6"><TablePagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={handlePageChange} /></div>}
         </div>
       </div>
       <CreateUserDialog isOpen={isCreateModalOpen} onClose={() => { setIsCreateModalOpen(false); setSelectedUser(null); }} onSubmit={handleCreateSubmit} />

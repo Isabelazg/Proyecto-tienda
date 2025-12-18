@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import{ useState } from 'react';
+import Navbar from '@/components/layout/Navbar/Navbar';
 import { Card } from '@/components/ui/card/Card';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert/Alert';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { useOrderTable } from '@/hooks/orders/useOrderTable';
 import { useCreateOrder } from '@/hooks/orders/useCreateOrder';
 import { useEditOrder } from '@/hooks/orders/useEditOrder';
@@ -110,100 +112,69 @@ export const OrderManagementForm = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Título */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gestión de Pedidos</h1>
-        <p className="text-gray-600 mt-1">
-          Administra los pedidos de las mesas del restaurante
-        </p>
-      </div>
-
-      {/* Mensajes de éxito */}
-      {successMessage && (
-        <Alert variant="success">
-          {successMessage}
-        </Alert>
-      )}
-
-      {/* Mensajes de error */}
-      {tableError && (
-        <Alert variant="error">
-          {tableError}
-        </Alert>
-      )}
-
-      {/* Filtros */}
-      <OrderFiltersBar
-        filters={filters}
-        tables={tables}
-        onFilterChange={handleFilterChange}
-        onCreateNew={openCreateDialog}
-        onRefresh={refetch}
-      />
-
-      {/* Contenido Principal */}
-      <Card>
-        <div className="p-6">
-          {/* Tabla de Datos */}
-          <OrderDataTable
-            orders={orders}
-            isLoading={isLoading}
-            sortConfig={sortConfig}
-            onSort={handleSort}
-            onView={openViewDialog}
-            onEdit={openEditDialog}
-            onChangeStatus={openStatusDialog}
-            onSendToCashier={handleSendToCashierSuccess}
-          />
-
-          {/* Paginación */}
-          {!isLoading && orders.length > 0 && (
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
-              <div className="text-sm text-gray-700">
-                Mostrando {(pagination.currentPage - 1) * pagination.itemsPerPage + 1} a{' '}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de{' '}
-                {pagination.totalItems} pedidos
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                  disabled={pagination.currentPage === 1}
-                  variant="ghost"
-                  size="sm"
-                >
-                  Anterior
-                </Button>
-                <div className="flex items-center gap-1">
-                  {[...Array(pagination.totalPages)].map((_, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handlePageChange(index + 1)}
-                      variant={pagination.currentPage === index + 1 ? 'default' : 'ghost'}
-                      size="sm"
-                      className={
-                        pagination.currentPage === index + 1
-                          ? 'bg-lime-500 text-black hover:bg-lime-600'
-                          : ''
-                      }
-                    >
-                      {index + 1}
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                  disabled={pagination.currentPage === pagination.totalPages}
-                  variant="ghost"
-                  size="sm"
-                >
-                  Siguiente
-                </Button>
-              </div>
-            </div>
-          )}
+    <>
+      <Navbar />
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Título */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Pedidos</h1>
+          <p className="text-gray-600 dark:text-slate-400 mt-1">
+            Administra los pedidos de las mesas del restaurante
+          </p>
         </div>
-      </Card>
+
+        {/* Mensajes de éxito */}
+        {successMessage && (
+          <Alert variant="success">
+            {successMessage}
+          </Alert>
+        )}
+
+        {/* Mensajes de error */}
+        {tableError && (
+          <Alert variant="error">
+            {tableError}
+          </Alert>
+        )}
+
+        {/* Filtros */}
+        <OrderFiltersBar
+          filters={filters}
+          tables={tables}
+          onFilterChange={handleFilterChange}
+          onCreateNew={openCreateDialog}
+          onRefresh={refetch}
+        />
+
+        {/* Contenido Principal */}
+        <Card>
+          <div className="p-6">
+            {/* Tabla de Datos */}
+            <OrderDataTable
+              orders={orders}
+              isLoading={isLoading}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              onView={openViewDialog}
+              onEdit={openEditDialog}
+              onChangeStatus={openStatusDialog}
+              onSendToCashier={handleSendToCashierSuccess}
+            />
+
+            {/* Paginación */}
+            {!isLoading && orders.length > 0 && (
+              <TablePagination
+                meta={{
+                  page: pagination.currentPage,
+                  limit: pagination.itemsPerPage,
+                  total: pagination.totalItems
+                }}
+                itemName="pedidos"
+                onPageChange={handlePageChange}
+              />
+            )}
+          </div>
+        </Card>
 
       {/* Diálogos */}
       <CreateOrderDialog
@@ -235,6 +206,7 @@ export const OrderManagementForm = () => {
         onClose={closeDialogs}
         onConfirm={handleStatusChange}
       />
-    </div>
+      </div>
+    </>
   );
 };

@@ -1,6 +1,5 @@
-import React from 'react';
-import { SearchBar } from '@/components/common/SearchBar/SearchBar';
-import { FormStatusBanner } from '@/components/common/Form';
+import { SearchBar } from '@/components/common';
+import { FormStatusBanner } from '@/components/common';
 import { Select } from '@/components/ui/select/Select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';

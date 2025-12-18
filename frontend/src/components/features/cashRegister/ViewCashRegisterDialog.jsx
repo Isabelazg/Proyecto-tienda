@@ -1,10 +1,9 @@
-import React from 'react';
 import { 
   FormViewDialog, 
   FormViewField,
   FormTransactionList,
   FormSummaryCard
-} from '@/components/common/Form';
+} from '@/components/common';
 import { DollarSign, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge/Badge';
 import { formatCurrency, formatDateTime } from '@/utils/format';

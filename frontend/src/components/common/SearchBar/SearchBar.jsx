@@ -1,9 +1,15 @@
-import React from 'react';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
-export const SearchBar = ({ 
+/**
+ * Componente de barra de búsqueda reutilizable
+ * @param {string} value - Valor del input de búsqueda
+ * @param {function} onChange - Función para manejar cambios en el input
+ * @param {string} placeholder - Texto placeholder del input
+ * @param {string} className - Clases CSS adicionales
+ */
+const SearchBar = ({ 
   value, 
   onChange, 
   placeholder = 'Buscar...', 
@@ -24,3 +30,5 @@ export const SearchBar = ({
     </div>
   );
 };
+
+export default SearchBar;

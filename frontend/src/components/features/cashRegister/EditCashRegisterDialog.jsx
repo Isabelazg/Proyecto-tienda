@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
 import { 
   FormDialog, 
@@ -10,7 +10,7 @@ import {
   FormDifferenceBox,
   FormAlertBox,
   FormInfoBanner
-} from '@/components/common/Form';
+} from '@/components/common';
 import { formatCurrency } from '@/utils/format';
 
 export const EditCashRegisterDialog = ({ 

@@ -1,4 +1,4 @@
-import CashRegisterManagementForm from '@/components/features/cashRegister/CashRegisterManagementForm';
+import { CashRegisterManagementForm } from '@/components/features/cashRegister/CashRegisterManagementForm';
 
  const CashRegisterManagementPage = () => {
   return <CashRegisterManagementForm />;

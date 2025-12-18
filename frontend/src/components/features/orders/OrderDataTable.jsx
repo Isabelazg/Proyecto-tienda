@@ -1,31 +1,7 @@
-import React from 'react';
 import { Eye, Edit, ArrowRight, Send } from 'lucide-react';
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableRow, 
-  TableHead, 
-  TableCell,
-  TableEmpty 
-} from '@/components/ui/table/Table';
-import { EmptyState } from '@/components/ui/empty-state/EmptyState';
-import { Badge } from '@/components/ui/badge/Badge';
-import { Button } from '@/components/ui/button';
+import { DataTable, TableActionsDropdown, FormStatusBadge } from '@/components/common';
+import { ENTITY_CONFIG, STATUS_CONFIGS } from '@/config';
 import { formatCurrency, formatDateTime } from '@/utils/format';
-import { ClipboardList } from 'lucide-react';
-
-const getOrderStatusBadge = (status) => {
-  const statusConfig = {
-    pendiente: { variant: 'warning', label: 'Pendiente' },
-    en_preparacion: { variant: 'info', label: 'En Preparación' },
-    entregado: { variant: 'success', label: 'Entregado' },
-    pagado: { variant: 'default', label: 'Pagado' }
-  };
-
-  const config = statusConfig[status] || statusConfig.pendiente;
-  return <Badge variant={config.variant}>{config.label}</Badge>;
-};
 
 export const OrderDataTable = ({ 
   orders, 
@@ -37,131 +13,109 @@ export const OrderDataTable = ({
   onChangeStatus,
   onSendToCashier
 }) => {
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lime-600"></div>
-      </div>
-    );
-  }
+  const entityConfig = ENTITY_CONFIG.order;
 
-  if (orders.length === 0) {
-    return (
-      <EmptyState
-        icon={ClipboardList}
-        title="No se encontraron pedidos"
-        description="Crea un nuevo pedido para comenzar"
-      />
-    );
-  }
+  const columns = [
+    {
+      key: 'id',
+      label: 'Pedido',
+      sortable: true,
+      className: 'font-semibold text-gray-900 dark:text-white',
+      render: (id) => `#${id}`
+    },
+    {
+      key: 'mesa_numero',
+      label: 'Mesa',
+      render: (mesa_numero) => mesa_numero ? (
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-lime-100 dark:bg-lime-900/20 rounded-lg flex items-center justify-center">
+            <span className="text-lime-700 font-bold text-sm">{mesa_numero}</span>
+          </div>
+          <span className="text-gray-700 dark:text-slate-300">Mesa {mesa_numero}</span>
+        </div>
+      ) : '-'
+    },
+    {
+      key: 'mesero',
+      label: 'Mesero',
+      align: 'center'
+    },
+    {
+      key: 'items',
+      label: 'Items',
+      align: 'center',
+      render: (_, order) => (
+        <span className="text-gray-900 dark:text-white">{order?.items?.length || 0} items</span>
+      )
+    },
+    {
+      key: 'total',
+      label: 'Total',
+      align: 'right',
+      className: 'font-semibold text-gray-900 dark:text-white',
+      render: (total) => formatCurrency(total || 0)
+    },
+    {
+      key: 'estado',
+      label: 'Estado',
+      align: 'center',
+      render: (estado) => (
+        <FormStatusBadge status={estado} config={STATUS_CONFIGS.order} />
+      )
+    },
+    {
+      key: 'created_at',
+      label: 'Fecha',
+      sortable: true,
+      align: 'center',
+      render: (fecha) => (
+        <span className="text-sm text-gray-600 dark:text-slate-300">
+          {formatDateTime(fecha)}
+        </span>
+      )
+    },
+    {
+      key: 'actions',
+      label: 'Acciones',
+      align: 'center',
+      render: (_, order) => (
+        <TableActionsDropdown
+          actions={[
+            {
+              icon: Eye,
+              label: 'Ver detalles',
+              onClick: () => onView(order)
+            },
+            {
+              icon: Edit,
+              label: 'Editar',
+              onClick: () => onEdit(order)
+            },
+            {
+              icon: ArrowRight,
+              label: 'Cambiar estado',
+              onClick: () => onChangeStatus(order)
+            },
+            {
+              icon: Send,
+              label: 'Enviar a caja',
+              onClick: () => onSendToCashier(order)
+            }
+          ]}
+        />
+      )
+    }
+  ];
 
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead 
-              sortable 
-              sortDirection={sortConfig.key === 'id' ? sortConfig.direction : null}
-              onSort={() => onSort('id')}
-            >
-              Pedido
-            </TableHead>
-            <TableHead>Mesa</TableHead>
-            <TableHead>Mesero</TableHead>
-            <TableHead>Items</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead 
-              sortable 
-              sortDirection={sortConfig.key === 'created_at' ? sortConfig.direction : null}
-              onSort={() => onSort('created_at')}
-            >
-              Fecha
-            </TableHead>
-            <TableHead className="text-center">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders.map(order => (
-            <TableRow key={order.id}>
-              <TableCell>
-                <span className="font-semibold text-gray-900">#{order.id}</span>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-lime-100 rounded-lg flex items-center justify-center">
-                    <span className="text-lime-700 font-bold text-sm">{order.mesa_numero}</span>
-                  </div>
-                  <span className="text-gray-700">Mesa {order.mesa_numero}</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-gray-700">{order.mesero}</span>
-              </TableCell>
-              <TableCell>
-                <span className="text-gray-600">{order.items.length} productos</span>
-              </TableCell>
-              <TableCell className="text-right">
-                <span className="font-bold text-gray-900">
-                  {formatCurrency(order.total)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div 
-                  className="cursor-pointer inline-block"
-                  onClick={() => onChangeStatus(order)}
-                >
-                  {getOrderStatusBadge(order.estado)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="text-sm text-gray-600">
-                  {formatDateTime(order.created_at)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => onView(order)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    title="Ver detalles"
-                  >
-                    <Eye className="h-4 w-4" />
-                  </button>
-                  {order.estado !== 'pagado' && (
-                    <button
-                      onClick={() => onEdit(order)}
-                      className="p-2 text-lime-600 hover:bg-lime-50 rounded-lg transition-colors"
-                      title="Editar pedido"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                  )}
-                  {order.estado === 'entregado' && (
-                    <button
-                      onClick={() => onSendToCashier(order)}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                      title="Enviar a caja"
-                    >
-                      <Send className="h-4 w-4" />
-                    </button>
-                  )}
-                  {order.estado !== 'pagado' && (
-                    <button
-                      onClick={() => onChangeStatus(order)}
-                      className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                      title="Cambiar estado"
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <DataTable
+      columns={columns}
+      data={orders}
+      isLoading={isLoading}
+      loadingMessage={`Cargando ${entityConfig.namePlural.toLowerCase()}...`}
+      emptyTitle={`No se encontraron ${entityConfig.namePlural.toLowerCase()}`}
+      emptyDescription={`No hay ${entityConfig.namePlural.toLowerCase()} que coincidan con los filtros aplicados.`}
+      emptyIcon={entityConfig.icon}
+    />
   );
 };

@@ -1,4 +1,4 @@
-import RoleManagementForm from '@/components/features/roles/RoleManagementForm';
+import { RoleManagementForm } from '@/components/features/roles/RoleManagementForm';
 
 const RolesManagementPage = () => {
   return <RoleManagementForm />;

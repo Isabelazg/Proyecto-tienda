@@ -1,9 +1,20 @@
-import React from 'react';
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card/Card';
 import { cn } from '@/lib/utils';
 
-export const StatCard = ({
+/**
+ * Componente de tarjeta de estadística reutilizable
+ * @param {string} title - Título de la estadística
+ * @param {string|number} value - Valor de la estadística
+ * @param {React.Component} icon - Icono a mostrar
+ * @param {string} trend - Tendencia ('up' o 'down')
+ * @param {string} trendValue - Valor de la tendencia
+ * @param {string} iconColor - Color del icono
+ * @param {string} iconBg - Color de fondo del icono
+ * @param {boolean} isLoading - Estado de carga
+ * @param {string} className - Clases CSS adicionales
+ */
+const StatCard = ({
   title,
   value,
   icon: Icon,
@@ -55,3 +66,5 @@ export const StatCard = ({
     </Card>
   );
 };
+
+export default StatCard;

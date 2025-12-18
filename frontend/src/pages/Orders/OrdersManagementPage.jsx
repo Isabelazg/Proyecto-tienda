@@ -1,4 +1,4 @@
-import OrderManagementForm from '@/components/features/orders/OrderManagementForm';
+import { OrderManagementForm } from '@/components/features/orders/OrderManagementForm';
 
 const OrdersManagementPage = () => {
   return <OrderManagementForm />;

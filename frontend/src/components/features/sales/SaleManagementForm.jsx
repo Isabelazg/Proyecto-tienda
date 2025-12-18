@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs/Tabs';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import { Pagination } from '@/components/common/Pagination/Pagination';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { POSInterface } from './POSInterface';
 import { SaleDataTable } from './SaleDataTable';
 import { SaleFiltersBar } from './SaleFiltersBar';
@@ -194,7 +194,7 @@ export const SaleManagementForm = () => {
             </div>
 
             {pagination.totalPages > 1 && (
-              <Pagination
+              <TablePagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 totalItems={pagination.totalItems}

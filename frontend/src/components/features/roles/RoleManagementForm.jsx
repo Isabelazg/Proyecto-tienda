@@ -8,6 +8,8 @@ import { useRoleTable } from '@/hooks/roles/useRoleTable';
 import { useCreateRole } from '@/hooks/roles/useCreateRole';
 import { useEditRole } from '@/hooks/roles/useEditRole';
 import { useDeleteRole } from '@/hooks/roles/useDeleteRole';
+import Navbar from '@/components/layout/Navbar/Navbar';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { RoleFiltersBar } from './RoleFiltersBar';
 import { RoleDataTable } from './RoleDataTable';
 import { CreateRoleDialog } from './CreateRoleDialog';
@@ -97,127 +99,102 @@ export const RoleManagementForm = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Título y Botón de Crear */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestión de Roles</h1>
-          <p className="text-gray-600 mt-1">
-            Administra los roles y permisos del sistema
-          </p>
+    <>
+      <Navbar />
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Título y Botón de Crear */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Roles</h1>
+            <p className="text-gray-600 dark:text-slate-400 mt-1">
+              Administra los roles y permisos del sistema
+            </p>
+          </div>
+          <Button
+            onClick={openCreateDialog}
+            className="bg-lime-500 text-black hover:bg-lime-600 flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Nuevo Rol
+          </Button>
         </div>
-        <Button
-          onClick={openCreateDialog}
-          className="bg-lime-500 text-black hover:bg-lime-600 flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          Nuevo Rol
-        </Button>
-      </div>
 
-      {/* Alertas */}
-      {error && (
-        <Alert variant="error" onClose={() => {}}>
-          {error}
-        </Alert>
-      )}
+        {/* Alertas */}
+        {error && (
+          <Alert variant="error" onClose={() => {}}>
+            {error}
+          </Alert>
+        )}
 
-      {/* Contenido Principal */}
-      <Card>
-        <div className="p-6">
-          {/* Barra de Filtros */}
-          <RoleFiltersBar filters={filters} onFilterChange={handleFilterChange} />
+        {/* Contenido Principal */}
+        <Card>
+          <div className="p-6">
+            {/* Barra de Filtros */}
+            <RoleFiltersBar filters={filters} onFilterChange={handleFilterChange} />
 
-          {/* Tabla de Datos */}
-          {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Spinner size="lg" />
-            </div>
-          ) : (
+            {/* Tabla de Datos */}
             <RoleDataTable
-              roles={roles}
-              sortConfig={sortConfig}
-              onSort={handleSort}
+              columns={[
+                { key: 'nombre', label: 'Nombre' },
+                { key: 'descripcion', label: 'Descripción' },
+                { key: 'permisos', label: 'Permisos' },
+                { key: 'created_at', label: 'Fecha de Creación' },
+                { key: 'estado', label: 'Estado' },
+                { key: 'acciones', label: 'Acciones' }
+              ]}
+              data={roles}
+              isLoading={isLoading}
+              loadingMessage="Cargando roles..."
+              emptyTitle="No hay roles"
+              emptyDescription="No se encontraron roles con los filtros seleccionados."
+              emptyIcon="users"
               onView={openViewDialog}
               onEdit={openEditDialog}
               onDelete={openDeleteDialog}
             />
-          )}
 
-          {/* Paginación */}
-          {!isLoading && roles.length > 0 && (
-            <div className="mt-6 flex items-center justify-between border-t pt-4">
-              <div className="text-sm text-gray-700">
-                Mostrando {(pagination.currentPage - 1) * pagination.itemsPerPage + 1} a{' '}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de{' '}
-                {pagination.totalItems} roles
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                  disabled={pagination.currentPage === 1}
-                  variant="ghost"
-                  size="sm"
-                >
-                  Anterior
-                </Button>
-                <div className="flex items-center gap-1">
-                  {[...Array(pagination.totalPages)].map((_, index) => (
-                    <Button
-                      key={index}
-                      onClick={() => handlePageChange(index + 1)}
-                      variant={pagination.currentPage === index + 1 ? 'default' : 'ghost'}
-                      size="sm"
-                      className={
-                        pagination.currentPage === index + 1
-                          ? 'bg-lime-500 text-black hover:bg-lime-600'
-                          : ''
-                      }
-                    >
-                      {index + 1}
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                  disabled={pagination.currentPage === pagination.totalPages}
-                  variant="ghost"
-                  size="sm"
-                >
-                  Siguiente
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </Card>
+            {/* Paginación */}
+            {!isLoading && roles.length > 0 && (
+              <TablePagination
+                meta={{
+                  page: pagination.currentPage,
+                  limit: pagination.itemsPerPage,
+                  total: pagination.totalItems
+                }}
+                onPageChange={handlePageChange}
+                itemName="roles"
+              />
+            )}
+          </div>
+        </Card>
 
-      {/* Diálogos */}
-      <CreateRoleDialog
-        isOpen={isCreateDialogOpen}
-        onClose={closeDialogs}
-        onSubmit={handleCreateRole}
-      />
+        {/* Diálogos */}
+        <CreateRoleDialog
+          isOpen={isCreateDialogOpen}
+          onClose={closeDialogs}
+          onSubmit={handleCreateRole}
+        />
 
-      <EditRoleDialog
-        isOpen={isEditDialogOpen}
-        role={selectedRole}
-        onClose={closeDialogs}
-        onSubmit={handleUpdateRole}
-      />
+        <EditRoleDialog
+          isOpen={isEditDialogOpen}
+          role={selectedRole}
+          onClose={closeDialogs}
+          onSubmit={handleUpdateRole}
+        />
 
-      <ViewRoleDialog
-        isOpen={isViewDialogOpen}
-        role={selectedRole}
-        onClose={closeDialogs}
-      />
+        <ViewRoleDialog
+          isOpen={isViewDialogOpen}
+          role={selectedRole}
+          onClose={closeDialogs}
+        />
 
-      <DeleteRoleDialog
-        isOpen={isDeleteDialogOpen}
-        role={selectedRole}
-        onClose={closeDialogs}
-        onConfirm={handleDeleteRole}
-      />
-    </div>
+        <DeleteRoleDialog
+          isOpen={isDeleteDialogOpen}
+          role={selectedRole}
+          onClose={closeDialogs}
+          onConfirm={handleDeleteRole}
+        />
+      </div>
+    </>
   );
 };

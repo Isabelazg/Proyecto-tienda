@@ -2,7 +2,7 @@ import React from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select/Select';
-import { SearchBar } from '@/components/common/SearchBar/SearchBar';
+import { SearchBar } from '@/components/common';
 
 export const ProductFiltersBar = ({ 
   filters, 

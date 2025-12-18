@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select/Select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { SearchBar } from '@/components/common/SearchBar/SearchBar';
+import { SearchBar } from '@/components/common';
 import { PAYMENT_METHODS, SALE_STATUS } from '@/utils/constants';
 
 export const SaleFiltersBar = ({ 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import { Pagination } from '@/components/common/Pagination/Pagination';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { CustomerFiltersBar } from './CustomerFiltersBar';
 import { CustomerDataTable } from './CustomerDataTable';
 import { CreateCustomerDialog } from './CreateCustomerDialog';
@@ -142,7 +142,7 @@ const CustomerManagementForm = () => {
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="mt-6">
-              <Pagination
+              <TablePagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}
                 onPageChange={handlePageChange}

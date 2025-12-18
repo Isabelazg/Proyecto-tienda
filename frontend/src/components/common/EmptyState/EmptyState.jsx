@@ -1,4 +1,3 @@
-import React from 'react';
 import { InboxIcon, AlertCircle } from 'lucide-react';
 
 const EmptyState = ({ 

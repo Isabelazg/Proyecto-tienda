@@ -18,6 +18,8 @@ export const formatCurrency = (amount) => {
  * @returns {string} - La fecha formateada
  */
 export const formatDate = (date, options = {}) => {
+  if (!date) return '-';
+  
   const defaultOptions = {
     year: 'numeric',
     month: 'short',
@@ -25,7 +27,11 @@ export const formatDate = (date, options = {}) => {
     ...options,
   };
 
-  return new Intl.DateTimeFormat('es-CO', defaultOptions).format(new Date(date));
+  try {
+    return new Intl.DateTimeFormat('es-CO', defaultOptions).format(new Date(date));
+  } catch (error) {
+    return '-';
+  }
 };
 
 /**
@@ -34,13 +40,19 @@ export const formatDate = (date, options = {}) => {
  * @returns {string} - La fecha y hora formateada
  */
 export const formatDateTime = (date) => {
-  return new Intl.DateTimeFormat('es-CO', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(date));
+  if (!date) return '-';
+  
+  try {
+    return new Intl.DateTimeFormat('es-CO', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(date));
+  } catch (error) {
+    return '-';
+  }
 };
 
 /**

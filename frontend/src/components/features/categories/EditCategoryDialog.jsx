@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea/Textarea';
 import { 
   Modal, 
   ModalHeader, 
@@ -10,6 +7,7 @@ import {
   ModalBody, 
   ModalFooter 
 } from '@/components/ui/modal/Modal';
+import { FormInput, FormTextarea } from '@/components/common';
 
 export const EditCategoryDialog = ({ 
   isOpen, 
@@ -66,33 +64,27 @@ export const EditCategoryDialog = ({
 
       <ModalBody>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nombre">Nombre de la Categoría *</Label>
-            <Input
-              id="nombre"
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              placeholder="Ej: Bebidas, Comida, Postres"
-              autoFocus
-            />
-            {formErrors.nombre && (
-              <p className="text-red-600 text-sm mt-1">{formErrors.nombre}</p>
-            )}
-          </div>
+          <FormInput
+            id="nombre"
+            label="Nombre de la Categoría"
+            value={formData.nombre}
+            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            placeholder="Ej: Bebidas, Comida, Postres"
+            required
+            error={formErrors.nombre}
+            autoFocus
+          />
 
-          <div>
-            <Label htmlFor="descripcion">Descripción *</Label>
-            <Textarea
-              id="descripcion"
-              value={formData.descripcion}
-              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-              placeholder="Describe el tipo de productos que incluye esta categoría"
-              rows={4}
-            />
-            {formErrors.descripcion && (
-              <p className="text-red-600 text-sm mt-1">{formErrors.descripcion}</p>
-            )}
-          </div>
+          <FormTextarea
+            id="descripcion"
+            label="Descripción"
+            value={formData.descripcion}
+            onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+            placeholder="Describe el tipo de productos que incluye esta categoría"
+            required
+            error={formErrors.descripcion}
+            rows={4}
+          />
         </form>
       </ModalBody>
 

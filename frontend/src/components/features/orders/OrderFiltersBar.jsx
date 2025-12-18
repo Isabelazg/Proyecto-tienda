@@ -1,5 +1,5 @@
 import React from 'react';
-import { SearchBar } from '@/components/common/SearchBar/SearchBar';
+import { SearchBar } from '@/components/common';
 import { Select } from '@/components/ui/select/Select';
 import { Button } from '@/components/ui/button';
 import { Plus, RefreshCw } from 'lucide-react';

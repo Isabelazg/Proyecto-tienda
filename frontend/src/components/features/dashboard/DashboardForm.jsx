@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Button } from '@/components/ui/button';
-import { StatCard } from '@/components/common/StatCard/StatCard';
+import { StatCard } from '@/components/common';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card/Card';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
 import { Badge } from '@/components/ui/badge/Badge';

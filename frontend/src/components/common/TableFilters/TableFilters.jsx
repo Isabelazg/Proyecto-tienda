@@ -1,7 +1,19 @@
-import React from 'react';
-import { SearchBar } from '@/components/common/SearchBar/SearchBar';
-import { Select } from '@/components/ui/select/Select';
+import SearchInput from '../SearchInput';
+import StatusFilter from '../StatusFilter';
+import { ItemsPerPageSelector } from '@/components/common';
 
+/**
+ * Componente de filtros reutilizable para tablas
+ * @param {string} searchPlaceholder - Placeholder del buscador
+ * @param {string} searchValue - Valor de búsqueda
+ * @param {function} onSearchChange - Función para cambio de búsqueda
+ * @param {string} statusValue - Valor del filtro de estado
+ * @param {function} onStatusChange - Función para cambio de estado
+ * @param {number} itemsPerPage - Elementos por página
+ * @param {function} onLimitChange - Función para cambio de límite
+ * @param {array} additionalFilters - Filtros adicionales como roles
+ * @param {boolean} showStatusFilter - Mostrar filtro de estado
+ */
 const TableFilters = ({
   searchPlaceholder = "Buscar...",
   searchValue,
@@ -10,51 +22,39 @@ const TableFilters = ({
   onStatusChange,
   itemsPerPage,
   onLimitChange,
-  showStatusFilter = false,
-  customFilters = null
+  additionalFilters = [],
+  showStatusFilter = false
 }) => {
   return (
     <div className="mb-6 flex flex-col sm:flex-row gap-4">
       {/* Buscador */}
-      <div className="flex-1">
-        <SearchBar
-          value={searchValue}
-          onChange={onSearchChange}
-          placeholder={searchPlaceholder}
-        />
-      </div>
+      <SearchInput
+        placeholder={searchPlaceholder}
+        value={searchValue}
+        onChange={onSearchChange}
+      />
+
+      {/* Filtros adicionales (como roles) */}
+      {additionalFilters.map((filter, index) => (
+        <div key={index}>
+          {filter}
+        </div>
+      ))}
 
       {/* Filtro de estado */}
       {showStatusFilter && (
-        <div className="w-full sm:w-48">
-          <Select
-            value={statusValue}
-            onChange={(e) => onStatusChange(e.target.value)}
-            options={[
-              { value: 'all', label: 'Todos los estados' },
-              { value: 'active', label: 'Activos' },
-              { value: 'inactive', label: 'Inactivos' }
-            ]}
-          />
-        </div>
+        <StatusFilter
+          value={statusValue}
+          onChange={onStatusChange}
+        />
       )}
 
-      {/* Filtros personalizados */}
-      {customFilters}
-
       {/* Items por página */}
-      <div className="w-full sm:w-32">
-        <Select
-          value={itemsPerPage}
-          onChange={(e) => onLimitChange(Number(e.target.value))}
-          options={[
-            { value: 5, label: '5 items' },
-            { value: 10, label: '10 items' },
-            { value: 20, label: '20 items' },
-            { value: 50, label: '50 items' }
-          ]}
-        />
-      </div>
+      <ItemsPerPageSelector
+        value={itemsPerPage}
+        onChange={onLimitChange}
+        options={[5, 10, 20, 50]}
+      />
     </div>
   );
 };

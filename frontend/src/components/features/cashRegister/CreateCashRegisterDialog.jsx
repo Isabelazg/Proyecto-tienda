@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FormDialog, FormInput, FormTextarea, FormInfoBanner } from '@/components/common/Form';
+import { useState } from 'react';
+import { FormDialog, FormInput, FormTextarea, FormInfoBanner } from '@/components/common';
 import { DollarSign } from 'lucide-react';
 
 export const CreateCashRegisterDialog = ({ 

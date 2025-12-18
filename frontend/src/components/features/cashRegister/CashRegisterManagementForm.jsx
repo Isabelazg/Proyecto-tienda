@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import Navbar from '@/components/layout/Navbar/Navbar';
 import { Card } from '@/components/ui/card/Card';
-import { Pagination } from '@/components/common/Pagination/Pagination';
+import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { CashRegisterFiltersBar } from './CashRegisterFiltersBar';
 import { CashRegisterDataTable } from './CashRegisterDataTable';
 import { CreateCashRegisterDialog } from './CreateCashRegisterDialog';
@@ -19,7 +20,6 @@ export const CashRegisterManagementForm = () => {
     pagination,
     filters,
     sortConfig,
-    handleSearch,
     handleFilterChange,
     handleSort,
     handlePageChange,
@@ -109,74 +109,87 @@ export const CashRegisterManagementForm = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {error}
+    <>
+      <Navbar />
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Título */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Gestión de Caja</h1>
+          <p className="text-gray-600 dark:text-slate-400 mt-1">
+            Administra las cajas registradoras y sus transacciones
+          </p>
         </div>
-      )}
 
-      {/* Filters Bar */}
-      <CashRegisterFiltersBar
-        filters={filters}
-        activeCashRegister={activeCashRegister}
-        onFilterChange={handleFilterChange}
-        onOpenCashRegister={handleOpenDialog}
-        onCloseCashRegister={handleCloseDialog}
-        onAddIncome={handleAddIncomeDialog}
-        onAddExpense={handleAddExpenseDialog}
-        onRefresh={refetch}
-      />
-
-      {/* Data Table */}
-      <Card>
-        <CashRegisterDataTable
-          cashRegisters={cashRegisters}
-          isLoading={isLoading}
-          sortConfig={sortConfig}
-          onSort={handleSort}
-          onView={handleViewCashRegister}
-        />
-
-        {/* Pagination */}
-        {!isLoading && cashRegisters.length > 0 && (
-          <div className="border-t p-4">
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              pageSize={pagination.itemsPerPage}
-              totalItems={pagination.totalItems}
-              onPageChange={handlePageChange}
-            />
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+            {error}
           </div>
         )}
-      </Card>
 
-      {/* Dialogs */}
-      <CreateCashRegisterDialog
-        isOpen={isOpenDialogOpen}
-        onClose={() => setIsOpenDialogOpen(false)}
-        onConfirm={handleOpenCashRegister}
-      />
+        {/* Filters Bar */}
+        <CashRegisterFiltersBar
+          filters={filters}
+          activeCashRegister={activeCashRegister}
+          onFilterChange={handleFilterChange}
+          onOpenCashRegister={handleOpenDialog}
+          onCloseCashRegister={handleCloseDialog}
+          onAddIncome={handleAddIncomeDialog}
+          onAddExpense={handleAddExpenseDialog}
+          onRefresh={refetch}
+        />
 
-      <EditCashRegisterDialog
-        isOpen={isCloseDialogOpen || isTransactionDialogOpen}
-        onClose={() => {
-          setIsCloseDialogOpen(false);
-          setIsTransactionDialogOpen(false);
-        }}
-        onConfirm={isCloseDialogOpen ? handleCloseCashRegister : handleAddTransaction}
-        cashRegister={activeCashRegister}
-        mode={isCloseDialogOpen ? 'close' : 'transaction'}
-        transactionType={transactionType}
-      />
+        {/* Data Table */}
+        <Card>
+          <div className="p-6">
+            <CashRegisterDataTable
+              cashRegisters={cashRegisters}
+              isLoading={isLoading}
+              sortConfig={sortConfig}
+              onSort={handleSort}
+              onView={handleViewCashRegister}
+            />
 
-      <ViewCashRegisterDialog
-        isOpen={isViewDialogOpen}
-        onClose={() => setIsViewDialogOpen(false)}
-        cashRegister={selectedCashRegister}
-      />
-    </div>
+            {/* Pagination */}
+            {!isLoading && cashRegisters.length > 0 && (
+              <TablePagination
+                meta={{
+                  page: pagination.currentPage,
+                  limit: pagination.itemsPerPage,
+                  total: pagination.totalItems
+                }}
+                itemName="cajas"
+                onPageChange={handlePageChange}
+              />
+            )}
+          </div>
+        </Card>
+
+        {/* Dialogs */}
+        <CreateCashRegisterDialog
+          isOpen={isOpenDialogOpen}
+          onClose={() => setIsOpenDialogOpen(false)}
+          onConfirm={handleOpenCashRegister}
+        />
+
+        <EditCashRegisterDialog
+          isOpen={isCloseDialogOpen || isTransactionDialogOpen}
+          onClose={() => {
+            setIsCloseDialogOpen(false);
+            setIsTransactionDialogOpen(false);
+          }}
+          onConfirm={isCloseDialogOpen ? handleCloseCashRegister : handleAddTransaction}
+          cashRegister={activeCashRegister}
+          mode={isCloseDialogOpen ? 'close' : 'transaction'}
+          transactionType={transactionType}
+        />
+
+        <ViewCashRegisterDialog
+          isOpen={isViewDialogOpen}
+          onClose={() => setIsViewDialogOpen(false)}
+          cashRegister={selectedCashRegister}
+        />
+      </div>
+    </>
   );
 };
