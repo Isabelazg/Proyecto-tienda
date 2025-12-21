@@ -195,6 +195,14 @@ export const useCustomerTable = () => {
     setPagination({ ...pagination, currentPage: page });
   };
 
+  const handleItemsPerPageChange = (itemsPerPage) => {
+    setPagination({
+      ...pagination,
+      itemsPerPage: Number(itemsPerPage),
+      currentPage: 1,
+    });
+  };
+
   const toggleCustomerStatus = async (customerId) => {
     try {
       // TODO: Reemplazar con llamada real a la API
@@ -221,6 +229,7 @@ export const useCustomerTable = () => {
     handleFilterChange,
     handleSort,
     handlePageChange,
+    handleItemsPerPageChange,
     toggleCustomerStatus,
     refetch: fetchCustomers
   };

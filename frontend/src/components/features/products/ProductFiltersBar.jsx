@@ -1,16 +1,16 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select/Select';
-import { SearchBar } from '@/components/common';
+import { SearchBar, ItemsPerPageSelector, FilterSelect } from '@/components/common';
 
 export const ProductFiltersBar = ({ 
   filters, 
-  categories,
-  totalItems,
-  isLoading,
+  categories = [],
+  totalItems = 0,
+  isLoading = false,
+  itemsPerPage = 10,
   onSearch, 
   onFilterChange,
+  onItemsPerPageChange,
   onCreateNew 
 }) => {
   return (
@@ -19,7 +19,7 @@ export const ProductFiltersBar = ({
         {/* Search */}
         <div className="md:col-span-2">
           <SearchBar
-            value={filters.search}
+            value={filters.search || ''}
             onChange={onSearch}
             placeholder="Buscar productos..."
           />
@@ -27,8 +27,8 @@ export const ProductFiltersBar = ({
 
         {/* Category Filter */}
         <div>
-          <Select
-            value={filters.category}
+          <FilterSelect
+            value={filters.category || ''}
             onChange={(e) => onFilterChange('category', e.target.value)}
           >
             <option value="">Todas las categorías</option>
@@ -37,30 +37,42 @@ export const ProductFiltersBar = ({
                 {category.nombre}
               </option>
             ))}
-          </Select>
+          </FilterSelect>
         </div>
 
         {/* Status Filter */}
         <div>
-          <Select
-            value={filters.status}
+          <FilterSelect
+            value={filters.status || 'all'}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
             <option value="all">Todos los estados</option>
             <option value="active">Activos</option>
             <option value="inactive">Inactivos</option>
-          </Select>
+          </FilterSelect>
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Bar */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          {isLoading ? 'Cargando...' : `${totalItems} productos encontrados`}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-600">
+            {isLoading ? 'Cargando...' : `${totalItems} productos encontrados`}
+          </div>
+          {onItemsPerPageChange && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Mostrar:</span>
+              <ItemsPerPageSelector
+                value={itemsPerPage}
+                onChange={onItemsPerPageChange}
+                options={[5, 10, 20, 50, 100]}
+              />
+            </div>
+          )}
         </div>
         <Button
           onClick={onCreateNew}
-          className="bg-black text-white hover:bg-gray-900"
+          variant="default"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Producto

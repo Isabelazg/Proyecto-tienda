@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingCart, Trash2, Plus, Minus, Search, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select/Select';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card/Card';
-import { Badge } from '@/components/ui/badge/Badge';
-import { Alert, AlertDescription } from '@/components/ui/alert/Alert';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Alert, AlertDescription } from '@/components/ui/Alert';
+import { FilterInput, FormSelect } from '@/components/common';
 import { formatCurrency } from '@/utils/format';
 import { PAYMENT_METHODS } from '@/utils/constants';
 
@@ -56,7 +55,7 @@ export const POSInterface = ({
             <div className="mb-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <Input
+                <FilterInput
                   type="text"
                   placeholder="Buscar productos..."
                   value={searchTerm}
@@ -215,7 +214,7 @@ export const POSInterface = ({
               <>
                 <div className="mb-4">
                   <Label>Método de Pago</Label>
-                  <Select
+                  <FormSelect
                     value={selectedPaymentMethod}
                     onChange={(e) => onPaymentMethodChange(e.target.value)}
                   >
@@ -224,13 +223,13 @@ export const POSInterface = ({
                         {name}
                       </option>
                     ))}
-                  </Select>
+                  </FormSelect>
                 </div>
 
                 {/* Mesero asignado */}
                 <div className="mb-4">
                   <Label>Mesero (Opcional)</Label>
-                  <Select
+                  <FormSelect
                     value={selectedWaiter}
                     onChange={(e) => onWaiterChange(e.target.value)}
                   >
@@ -240,13 +239,13 @@ export const POSInterface = ({
                     <option value="3">Luis Martínez</option>
                     <option value="4">Sofía Rodríguez</option>
                     <option value="5">Miguel Álvarez</option>
-                  </Select>
+                  </FormSelect>
                 </div>
 
                 {/* Cliente asociado */}
                 <div className="mb-4">
                   <Label>Cliente (Opcional)</Label>
-                  <Select
+                  <FormSelect
                     value={selectedCustomer}
                     onChange={(e) => onCustomerChange(e.target.value)}
                   >
@@ -256,7 +255,7 @@ export const POSInterface = ({
                     <option value="3">Ana María López</option>
                     <option value="4">Juan David Martínez</option>
                     <option value="5">Laura Camila Sánchez</option>
-                  </Select>
+                  </FormSelect>
                 </div>
 
                 {/* Totales */}

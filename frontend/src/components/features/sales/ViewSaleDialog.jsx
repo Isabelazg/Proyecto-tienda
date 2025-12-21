@@ -15,7 +15,7 @@ import {
   TableRow, 
   TableHead, 
   TableCell 
-} from '@/components/ui/table/Table';
+} from '@/components/ui/Table';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 import { getSaleStatusBadge, getPaymentMethodBadge } from '@/utils/badges';
 import { Printer } from 'lucide-react';

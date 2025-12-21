@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { 
   Modal, 
   ModalHeader, 
@@ -9,16 +9,9 @@ import {
   ModalBody, 
   ModalFooter 
 } from '@/components/ui/modal/Modal';
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableRow, 
-  TableHead, 
-  TableCell 
-} from '@/components/ui/table/Table';
+
 import { formatCurrency, formatDateTime } from '@/utils/format';
-import { ShoppingBag, Calendar, CreditCard, Package } from 'lucide-react';
+import { ShoppingBag, Calendar, Package } from 'lucide-react';
 
 export const CustomerPurchaseHistoryDialog = ({ 
   isOpen, 

@@ -42,6 +42,11 @@ export const useCustomerValidation = () => {
       errors.documento = 'El documento no puede exceder 20 caracteres';
     }
 
+    // Validar tipo de documento
+    if (!data.tipo_documento || String(data.tipo_documento).trim() === '') {
+      errors.tipo_documento = 'El tipo de documento es requerido';
+    }
+
     // Validar dirección (opcional)
     if (data.direccion && data.direccion.length > 200) {
       errors.direccion = 'La dirección no puede exceder 200 caracteres';

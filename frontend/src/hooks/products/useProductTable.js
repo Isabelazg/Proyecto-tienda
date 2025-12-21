@@ -21,6 +21,20 @@ export const useProductTable = () => {
     direction: 'asc',
   });
 
+  // Estados para modales
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Estados para filtros y paginación
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [productPerPage, setProductPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     fetchProducts();
     fetchCategories();
@@ -250,6 +264,50 @@ export const useProductTable = () => {
     }
   };
 
+  // Handlers para filtros
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+    setFilters({ ...filters, search: value });
+    setPagination({ ...pagination, currentPage: 1 });
+  };
+
+  const handleStatusChange = (value) => {
+    setStatusFilter(value);
+    setFilters({ ...filters, status: value });
+    setPagination({ ...pagination, currentPage: 1 });
+  };
+
+  const handleCategoryChange = (value) => {
+    setCategoryFilter(value);
+    setFilters({ ...filters, category: value });
+    setPagination({ ...pagination, currentPage: 1 });
+  };
+
+  const handleLimitChange = (value) => {
+    setProductPerPage(value);
+    setPagination({ ...pagination, itemsPerPage: value, currentPage: 1 });
+  };
+
+  // Handlers para modales
+  const handleViewProduct = (product) => {
+    setSelectedProduct(product);
+    setShowViewModal(true);
+  };
+
+  // Función para obtener números de página
+  const getPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= pagination.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
+  // Función para refrescar productos
+  const refreshProducts = () => {
+    fetchProducts();
+  };
+
   return {
     products,
     categories,
@@ -258,10 +316,32 @@ export const useProductTable = () => {
     pagination,
     filters,
     sortConfig,
+    searchTerm,
+    statusFilter,
+    categoryFilter,
+    productPerPage,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showViewModal,
+    showDeleteModal,
+    selectedProduct,
+    setShowCreateModal,
+    setShowEditModal,
+    setShowViewModal,
+    setShowDeleteModal,
+    handleSearchChange,
+    handleStatusChange,
+    handleCategoryChange,
+    handleLimitChange,
+    handleViewProduct,
     handleSearch,
     handleFilterChange,
     handleSort,
     handlePageChange,
+    setCurrentPage,
+    getPageNumbers,
+    refreshProducts,
     toggleProductStatus,
     refetch: fetchProducts
   };

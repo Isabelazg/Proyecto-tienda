@@ -1,16 +1,16 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select/Select';
-import { SearchBar } from '@/components/common';
+import { SearchBar, ItemsPerPageSelector, FilterSelect } from '@/components/common';
 import { ROLES } from '@/utils/roles';
 
 export const UserFiltersBar = ({ 
   filters, 
-  totalItems,
-  isLoading,
+  totalItems = 0,
+  isLoading = false,
+  itemsPerPage = 10,
   onSearch, 
   onFilterChange,
+  onItemsPerPageChange,
   onCreateNew 
 }) => {
   return (
@@ -27,7 +27,7 @@ export const UserFiltersBar = ({
 
         {/* Role Filter */}
         <div>
-          <Select
+          <FilterSelect
             value={filters.role}
             onChange={(e) => onFilterChange('role', e.target.value)}
           >
@@ -35,30 +35,42 @@ export const UserFiltersBar = ({
             <option value={ROLES.ADMINISTRADOR}>{ROLES.ADMINISTRADOR}</option>
             <option value={ROLES.EMPLEADO}>{ROLES.EMPLEADO}</option>
             <option value={ROLES.MESERO}>{ROLES.MESERO}</option>
-          </Select>
+          </FilterSelect>
         </div>
 
         {/* Status Filter */}
         <div>
-          <Select
+          <FilterSelect
             value={filters.status}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
             <option value="all">Todos los estados</option>
             <option value="active">Activos</option>
             <option value="inactive">Inactivos</option>
-          </Select>
+          </FilterSelect>
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* Action Bar */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-gray-600">
-          {isLoading ? 'Cargando...' : `${totalItems} usuarios encontrados`}
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-gray-600">
+            {isLoading ? 'Cargando...' : `${totalItems} usuarios encontrados`}
+          </div>
+          {onItemsPerPageChange && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Mostrar:</span>
+              <ItemsPerPageSelector
+                value={itemsPerPage}
+                onChange={onItemsPerPageChange}
+                options={[5, 10, 20, 50, 100]}
+              />
+            </div>
+          )}
         </div>
         <Button
           onClick={onCreateNew}
-          className="bg-black text-white hover:bg-gray-900"
+          variant="default"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Usuario

@@ -1,6 +1,6 @@
 import { SearchBar } from '@/components/common';
 import { FormStatusBanner } from '@/components/common';
-import { Select } from '@/components/ui/select/Select';
+import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, DollarSign, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
@@ -28,7 +28,7 @@ export const CashRegisterFiltersBar = ({
             <>
               <Button
                 onClick={onAddIncome}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                variant="default"
                 size="sm"
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
@@ -36,7 +36,7 @@ export const CashRegisterFiltersBar = ({
               </Button>
               <Button
                 onClick={onAddExpense}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                variant="default"
                 size="sm"
               >
                 <TrendingDown className="h-4 w-4 mr-2" />
@@ -44,7 +44,7 @@ export const CashRegisterFiltersBar = ({
               </Button>
               <Button
                 onClick={onCloseCashRegister}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                variant="destructive"
               >
                 Cerrar Caja
               </Button>
@@ -60,7 +60,7 @@ export const CashRegisterFiltersBar = ({
           actions={
             <Button
               onClick={onOpenCashRegister}
-              className="bg-lime-600 hover:bg-lime-700 text-white"
+              variant="default"
             >
               <Plus className="h-4 w-4 mr-2" />
               Abrir Caja

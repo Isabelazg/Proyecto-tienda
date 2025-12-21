@@ -20,8 +20,11 @@ const FormSelect = ({
   required = false,
   disabled = false,
   options = [],
+  children,
   ...props
 }) => {
+  const hasOptions = Array.isArray(options) && options.length > 0;
+
   return (
     <div className="space-y-1">
       <label 
@@ -49,11 +52,13 @@ const FormSelect = ({
           } bg-white dark:bg-slate-800 text-gray-900 dark:text-white`}
           {...props}
         >
-          {options.map((option, index) => (
-            <option key={index} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          {hasOptions
+            ? options.map((option, index) => (
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
+              ))
+            : children}
         </select>
       </div>
       {error && (

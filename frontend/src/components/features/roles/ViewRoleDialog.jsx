@@ -1,9 +1,6 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui/modal/Modal';
+import { FormViewDialog, FormViewField } from '@/components/common';
 import { formatDate } from '@/utils/format';
-import { Shield, Users, Calendar, CheckCircle } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 // Mapeo de permisos a nombres legibles
 const PERMISSION_LABELS = {
@@ -49,89 +46,45 @@ export const ViewRoleDialog = ({ isOpen, role, onClose }) => {
   const groupedPermissions = groupPermissionsByModule(role.permisos);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="large">
-      <ModalHeader onClose={onClose}>
-        <ModalTitle>Detalles del Rol</ModalTitle>
-      </ModalHeader>
+    <FormViewDialog
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Detalles del Rol"
+      IconComponent={Shield}
+      maxWidth="max-w-3xl"
+    >
+      <div className="space-y-4">
+        <FormViewField label="Nombre" value={role.nombre} />
+        <FormViewField label="Descripción" value={role.descripcion} />
 
-      <ModalBody>
-        <div className="space-y-6">
-          {/* Encabezado con icono */}
-          <div className="flex items-center gap-4 pb-4 border-b border-gray-200">
-            <div className="bg-indigo-100 p-4 rounded-xl">
-              <Shield className="h-8 w-8 text-indigo-600" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-gray-900">{role.nombre}</h3>
-              <p className="text-sm text-gray-500 mt-1">{role.descripcion}</p>
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormViewField label="Usuarios asignados" value={String(role.total_usuarios ?? 0)} />
+          <FormViewField label="Cantidad de permisos" value={String(role.permisos?.length ?? 0)} />
+        </div>
 
-          {/* Información General */}
-          <div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-3">Información General</h4>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <Label className="flex items-center gap-2 text-blue-700">
-                  <Users className="h-4 w-4" />
-                  Usuarios Asignados
-                </Label>
-                <p className="text-3xl font-bold text-blue-900 mt-2">{role.total_usuarios}</p>
-              </div>
-              <div className="bg-green-50 p-4 rounded-lg">
-                <Label className="flex items-center gap-2 text-green-700">
-                  <CheckCircle className="h-4 w-4" />
-                  Permisos
-                </Label>
-                <p className="text-3xl font-bold text-green-900 mt-2">{role.permisos.length}</p>
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormViewField label="Fecha de creación" value={role.created_at ? formatDate(role.created_at) : ''} />
+          <FormViewField label="Estado" value={role.estado ? 'Activo' : 'Inactivo'} />
+        </div>
 
-          {/* Información Adicional */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                Fecha de Creación
-              </Label>
-              <p className="text-gray-900 mt-1">{formatDate(role.created_at)}</p>
-            </div>
-            <div>
-              <Label>Estado</Label>
-              <p className={`font-medium mt-1 ${role.estado ? 'text-green-600' : 'text-red-600'}`}>
-                {role.estado ? 'Activo' : 'Inactivo'}
-              </p>
-            </div>
-          </div>
-
-          {/* Permisos por Módulo */}
-          <div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-3">Permisos Asignados</h4>
-            <div className="space-y-3">
-              {Object.entries(groupedPermissions).map(([module, permissions]) => (
-                <div key={module} className="border border-gray-200 rounded-lg p-4">
-                  <h5 className="font-semibold text-gray-900 mb-2 capitalize">{module}</h5>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {permissions.map(permission => (
-                      <div key={permission} className="flex items-center gap-2 text-sm text-gray-700">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        {PERMISSION_LABELS[permission] || permission}
-                      </div>
-                    ))}
-                  </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Permisos</label>
+          <div className="mt-2 space-y-3">
+            {Object.entries(groupedPermissions).map(([module, permissions]) => (
+              <div key={module} className="border border-gray-200 dark:border-slate-700 rounded-lg p-4">
+                <h5 className="font-semibold text-gray-900 dark:text-white mb-2 capitalize">{module}</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {permissions.map((permission) => (
+                    <div key={permission} className="text-sm text-gray-700 dark:text-slate-300">
+                      {PERMISSION_LABELS[permission] || permission}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
-      </ModalBody>
-
-      <ModalFooter>
-        <Button onClick={onClose} className="bg-black text-white hover:bg-gray-900">
-          Cerrar
-        </Button>
-      </ModalFooter>
-    </Modal>
+      </div>
+    </FormViewDialog>
   );
 };

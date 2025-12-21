@@ -10,6 +10,7 @@ import { Button as UIButton } from "@/components/ui/button";
  * @param {string} description - Descripción del diálogo
  * @param {React.Component} IconComponent - Componente de icono
  * @param {string} maxWidth - Ancho máximo del modal
+ * @param {React.ReactNode} footerActions - Acciones adicionales en el footer
  * @param {React.ReactNode} children - Contenido del modal
  */
 const FormViewDialog = ({ 
@@ -20,6 +21,7 @@ const FormViewDialog = ({
   description,
   IconComponent,
   maxWidth = "max-w-2xl",
+  footerActions,
   children 
 }) => {
   return (
@@ -43,6 +45,7 @@ const FormViewDialog = ({
         {children}
       </ModalBody>
       <ModalFooter>
+        {footerActions}
         <UIButton variant="outline" onClick={onClose}>
           Cerrar
         </UIButton>

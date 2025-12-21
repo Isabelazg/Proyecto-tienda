@@ -54,7 +54,7 @@ export const CashRegisterDataTable = ({
       key: 'efectivo_esperado',
       label: 'Efectivo Esperado',
       align: 'right',
-      className: 'font-bold text-lime-600',
+      className: 'font-bold text-gray-900 dark:text-white',
       render: (monto) => formatCurrency(monto)
     },
     {

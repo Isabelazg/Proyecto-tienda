@@ -1,5 +1,5 @@
 import { Eye, XCircle } from 'lucide-react';
-import { DataTable, TableActionsDropdown, FormStatusBadge, LoadingState, EmptyState } from '@/components/common';
+import { DataTable, TableActionsDropdown, FormStatusBadge } from '@/components/common';
 import { ENTITY_CONFIG, STATUS_CONFIGS } from '@/config';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 import { getPaymentMethodBadge, getCountBadge } from '@/utils/badges';
@@ -14,29 +14,14 @@ export const SaleDataTable = ({
 }) => {
   const entityConfig = ENTITY_CONFIG.sale;
 
-  if (isLoading) {
-    return <LoadingState message={`Cargando ${entityConfig.namePlural.toLowerCase()}...`} />;
-  }
-
-  if (!Array.isArray(sales) || sales.length === 0) {
-    return (
-      <EmptyState
-        icon={entityConfig.icon}
-        title={`No se encontraron ${entityConfig.namePlural.toLowerCase()}`}
-        description={`No hay ${entityConfig.namePlural.toLowerCase()} que coincidan con los filtros aplicados.`}
-        isError={!Array.isArray(sales)}
-      />
-    );
-  }
-
   const columns = [
     {
       key: 'venta_id',
       label: 'ID',
       sortable: true,
-      render: (sale) => (
+      render: (venta_id) => (
         <span className="font-medium text-gray-900 dark:text-white">
-          #{sale.venta_id}
+          #{venta_id}
         </span>
       )
     },
@@ -44,82 +29,85 @@ export const SaleDataTable = ({
       key: 'fecha',
       label: 'Fecha',
       sortable: true,
-      render: (sale) => (
+      render: (fecha) => (
         <span className="text-sm text-gray-600 dark:text-slate-300">
-          {formatDateTime(sale.fecha)}
+          {formatDateTime(fecha)}
         </span>
       )
     },
     {
       key: 'usuario',
       label: 'Usuario',
-      render: (sale) => (
-        <span className="text-gray-900 dark:text-white">{sale.usuario}</span>
+      render: (usuario) => (
+        <span className="text-gray-900 dark:text-white">{usuario || '-'}</span>
       )
     },
     {
       key: 'items',
       label: 'Items',
-      render: (sale) => getCountBadge(sale.items?.length || 0, 'items')
+      align: 'center',
+      render: (items) => getCountBadge(items?.length || 0, 'items')
     },
     {
       key: 'total',
       label: 'Total',
       sortable: true,
-      render: (sale) => (
-        <span className="font-semibold text-lime-600 dark:text-lime-400">
-          {formatCurrency(sale.total)}
-        </span>
-      )
+      align: 'right',
+      className: 'font-semibold text-lime-600 dark:text-lime-400',
+      render: (total) => formatCurrency(total || 0)
     },
     {
       key: 'metodo_pago',
       label: 'Método Pago',
-      render: (sale) => getPaymentMethodBadge(sale?.metodo_pago)
+      align: 'center',
+      render: (metodo_pago) => getPaymentMethodBadge(metodo_pago)
     },
     {
       key: 'estado',
       label: 'Estado',
       align: 'center',
-      render: (sale) => (
-        <FormStatusBadge status={sale?.estado} config={STATUS_CONFIGS.sale} />
+      render: (estado) => (
+        <FormStatusBadge status={estado} config={STATUS_CONFIGS.sale} />
       )
     },
     {
       key: 'actions',
       label: 'Acciones',
-      align: 'right',
-      render: (sale) => {
-        if (!sale) return null;
-        
+      align: 'center',
+      render: (_, sale) => {
         const actions = [
           {
-            label: 'Ver detalles',
             icon: Eye,
+            label: 'Ver detalles',
             onClick: () => onView(sale)
           }
         ];
 
         if (sale?.estado === 'completada') {
           actions.push({
-            label: 'Anular venta',
             icon: XCircle,
+            label: 'Anular venta',
             onClick: () => onCancel(sale),
-            destructive: true
+            variant: 'destructive'
           });
         }
 
-        return <TableActionsDropdown actions={actions} align="right" />;
+        return <TableActionsDropdown actions={actions} />;
       }
     }
   ];
 
   return (
-    <DataTable 
-      data={sales}
+    <DataTable
       columns={columns}
+      data={sales}
+      isLoading={isLoading}
       sortConfig={sortConfig}
       onSort={onSort}
+      loadingMessage={`Cargando ${entityConfig.namePlural.toLowerCase()}...`}
+      emptyTitle={`No se encontraron ${entityConfig.namePlural.toLowerCase()}`}
+      emptyDescription={`No hay ${entityConfig.namePlural.toLowerCase()} que coincidan con los filtros aplicados.`}
+      emptyIcon={entityConfig.icon}
     />
   );
 };

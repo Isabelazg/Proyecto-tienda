@@ -1,4 +1,4 @@
-import { Edit, Trash2, Eye, Check, X as XIcon } from 'lucide-react';
+import { Edit, Trash2, Eye, UserCircle } from 'lucide-react';
 import { DataTable, TableActionsDropdown, FormStatusBadge } from '@/components/common';
 import { ENTITY_CONFIG, STATUS_CONFIGS } from '@/config';
 import { formatCurrency, formatDate } from '@/utils/format';
@@ -17,29 +17,30 @@ export const CustomerDataTable = ({
 
   const columns = [
     {
-      key: 'nombre',
+      key: 'avatar',
       label: 'Cliente',
-      sortable: true,
-      render: (nombre, customer) => (
-        <div>
-          <p className="font-medium text-gray-900 dark:text-white">{nombre || '-'}</p>
-          {customer?.fecha_registro && (
-            <p className="text-sm text-gray-500 dark:text-slate-400">
-              Registrado: {formatDate(customer.fecha_registro)}
-            </p>
-          )}
+      render: (_, customer) => (
+        <div className="w-12 h-12 bg-gray-200 dark:bg-slate-700 rounded-lg flex items-center justify-center">
+          <UserCircle className="w-6 h-6 text-gray-400" />
         </div>
       )
     },
     {
-      key: 'email',
-      label: 'Contacto',
-      render: (email, customer) => (
+      key: 'nombre',
+      label: 'Nombre',
+      sortable: true,
+      render: (nombre, customer) => (
         <div>
-          <p className="text-sm text-gray-900 dark:text-white">{email || '-'}</p>
-          {customer?.telefono && (
-            <p className="text-sm text-gray-500 dark:text-slate-400">{customer.telefono}</p>
-          )}
+          <p className="font-medium text-gray-900 dark:text-white">{nombre || '-'}</p>
+          {customer?.email ? (
+            <p className="text-sm text-gray-500 dark:text-slate-400 line-clamp-1">
+              {customer.email}
+            </p>
+          ) : customer?.fecha_registro ? (
+            <p className="text-sm text-gray-500 dark:text-slate-400">
+              Registrado: {formatDate(customer.fecha_registro)}
+            </p>
+          ) : null}
         </div>
       )
     },
@@ -57,14 +58,6 @@ export const CustomerDataTable = ({
       )
     },
     {
-      key: 'total_compras',
-      label: 'Total Compras',
-      sortable: true,
-      align: 'center',
-      className: 'font-medium text-gray-900 dark:text-white',
-      render: (total_compras) => total_compras || 0
-    },
-    {
       key: 'total_gastado',
       label: 'Total Gastado',
       sortable: true,
@@ -73,14 +66,24 @@ export const CustomerDataTable = ({
       render: (total_gastado) => formatCurrency(total_gastado || 0)
     },
     {
+      key: 'total_compras',
+      label: 'Total Compras',
+      sortable: true,
+      align: 'center',
+      className: 'font-medium text-gray-900 dark:text-white',
+      render: (total_compras) => total_compras || 0
+    },
+    {
       key: 'estado',
       label: 'Estado',
       align: 'center',
-      render: (estado) => (
-        <FormStatusBadge 
-          status={estado} 
-          config={STATUS_CONFIGS.general} 
-        />
+      render: (estado, customer) => (
+        <div className="cursor-pointer inline-block" onClick={() => onToggleStatus(customer)}>
+          <FormStatusBadge 
+            status={estado ? 'activo' : 'inactivo'} 
+            config={STATUS_CONFIGS.general} 
+          />
+        </div>
       )
     },
     {
@@ -101,15 +104,10 @@ export const CustomerDataTable = ({
               onClick: () => onEdit(customer)
             },
             {
-              icon: customer?.estado ? XIcon : Check,
-              label: customer?.estado ? 'Desactivar' : 'Activar',
-              onClick: () => onToggleStatus(customer.id)
-            },
-            {
               icon: Trash2,
               label: 'Eliminar',
               onClick: () => onDelete(customer),
-              destructive: true
+              variant: 'destructive'
             }
           ]}
         />

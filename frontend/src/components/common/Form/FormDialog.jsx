@@ -54,7 +54,7 @@ const FormDialog = ({
           <UIButton 
             type="submit" 
             disabled={submitDisabled || isLoading}
-            className="bg-lime-600 hover:bg-lime-700 text-white"
+            className="bg-black hover:bg-gray-900 text-white"
           >
             {submitText}
           </UIButton>

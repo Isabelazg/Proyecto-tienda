@@ -1,19 +1,15 @@
-import React, { useState } from 'react';
-import Navbar from '@/components/layout/Navbar/Navbar';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import TablePagination from '@/components/common/TablePagination/TablePagination';
-import { ProductFiltersBar } from './ProductFiltersBar';
-import { ProductDataTable } from './ProductDataTable';
-import { CreateProductDialog } from './CreateProductDialog';
-import { EditProductDialog } from './EditProductDialog';
-import { ViewProductDialog } from './ViewProductDialog';
-import { DeleteProductDialog } from './DeleteProductDialog';
-import { useProductTable } from '@/hooks/products/useProductTable';
-import { useCreateProduct } from '@/hooks/products/useCreateProduct';
-import { useEditProduct } from '@/hooks/products/useEditProduct';
-import { useDeleteProduct } from '@/hooks/products/useDeleteProduct';
+import Navbar from "@/components/layout/Navbar/Navbar";
+import { useProductTable } from "@/hooks/products/useProductTable";
+import { useCreateProduct } from "@/hooks/products/useCreateProduct";
+import { useEditProduct } from "@/hooks/products/useEditProduct";
+import { CreateProductDialog } from "./CreateProductDialog";
+import { EditProductDialog } from "./EditProductDialog";
+import { ViewProductDialog } from "./ViewProductDialog";
+import { DeleteProductDialog } from "./DeleteProductDialog";
+import { ProductDataTable } from "./ProductDataTable";
+import { ProductFiltersBar } from "./ProductFiltersBar";
 
-const ProductManagementForm = () => {
+export default function ProductsTable({ className, ...props }) {
   const {
     products,
     categories,
@@ -22,65 +18,88 @@ const ProductManagementForm = () => {
     pagination,
     filters,
     sortConfig,
-    handleSearch,
-    handleFilterChange,
+    searchTerm,
+    statusFilter,
+    categoryFilter,
+    productPerPage,
+    currentPage,
+    showCreateModal,
+    showEditModal,
+    showViewModal,
+    showDeleteModal,
+    selectedProduct,
+    setShowCreateModal,
+    setShowEditModal,
+    setShowViewModal,
+    setShowDeleteModal,
+    handleSearchChange,
+    handleStatusChange,
+    handleCategoryChange,
+    handleLimitChange,
+    handleViewProduct,
     handleSort,
-    handlePageChange,
+    setCurrentPage,
+    getPageNumbers,
+    refreshProducts,
     toggleProductStatus,
-    refetch
   } = useProductTable();
 
-  const { createProduct } = useCreateProduct(refetch);
-  const { updateProduct } = useEditProduct(refetch);
-  const { deleteProduct } = useDeleteProduct(refetch);
+  // Hook para crear producto
+  const {
+    productData,
+    errors: createErrors,
+    isLoading: isCreating,
+    handleFieldChange: handleCreateFieldChange,
+    clearForm,
+    handleSubmit: handleCreateSubmit,
+  } = useCreateProduct();
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const handleOpenCreateModal = () => {
-    setSelectedProduct(null);
-    setIsCreateModalOpen(true);
+  // Handler para el éxito de la creación
+  const handleCreateSuccess = () => {
+    setShowCreateModal(false);
+    clearForm();
+    if (typeof refreshProducts === 'function') refreshProducts();
   };
 
-  const handleOpenEditModal = (product) => {
-    setSelectedProduct(product);
-    setIsEditModalOpen(true);
+  // Hook para editar producto
+  const {
+    productData: editProductData,
+    errors: editErrors,
+    isLoading: isEditing,
+    isDeleting,
+    handleFieldChange: handleEditFieldChange,
+    openDialog: openEditDialog,
+    closeDialog: closeEditDialog,
+    handleSubmit: handleEditSubmit,
+    handleDelete: handleDeleteProduct,
+  } = useEditProduct();
+
+  // Handler para el éxito de la edición
+  const handleEditSuccess = () => {
+    setShowEditModal(false);
+    closeEditDialog();
+    if (typeof refreshProducts === 'function') refreshProducts();
   };
 
-  const handleOpenViewModal = (product) => {
-    setSelectedProduct(product);
-    setIsViewModalOpen(true);
+  // Handler personalizado para abrir modal de edición
+  const handleEditProductAction = (product) => {
+    openEditDialog(product);
+    setShowEditModal(true);
   };
 
-  const handleOpenDeleteModal = (product) => {
-    setSelectedProduct(product);
-    setIsDeleteModalOpen(true);
+  // Handler para el éxito de la eliminación
+  const handleDeleteSuccess = () => {
+    setShowDeleteModal(false);
+    if (typeof refreshProducts === 'function') refreshProducts();
   };
 
-  const handleCreateSubmit = async (formData) => {
-    const result = await createProduct(formData);
-    if (result.success) {
-      setIsCreateModalOpen(false);
+  // Handler para cambio de estado que refresca la tabla automáticamente
+  const handleChangeEstado = async (product) => {
+    const result = await toggleProductStatus(product);
+    if (result.success && typeof refreshProducts === 'function') {
+      refreshProducts();
     }
-  };
-
-  const handleEditSubmit = async (formData) => {
-    const result = await updateProduct(selectedProduct.id, formData);
-    if (result.success) {
-      setIsEditModalOpen(false);
-      setSelectedProduct(null);
-    }
-  };
-
-  const handleConfirmDelete = async () => {
-    if (selectedProduct) {
-      await deleteProduct(selectedProduct.id);
-      setIsDeleteModalOpen(false);
-      setSelectedProduct(null);
-    }
+    return result;
   };
 
   return (
@@ -91,93 +110,88 @@ const ProductManagementForm = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Gestión de Productos
-            </h1>
-            <p className="text-gray-600">
-              Administra el inventario de productos de tu tienda
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestión de Productos</h1>
+            <p className="text-gray-600">Administra el inventario de productos de tu tienda</p>
           </div>
 
           {/* Filters */}
           <ProductFiltersBar
-            filters={filters}
+            filters={{
+              search: searchTerm,
+              category: categoryFilter || '',
+              status: statusFilter || 'all'
+            }}
             categories={categories}
-            totalItems={pagination.totalItems}
+            totalItems={pagination?.totalItems || 0}
             isLoading={isLoading}
-            onSearch={handleSearch}
-            onFilterChange={handleFilterChange}
-            onCreateNew={handleOpenCreateModal}
+            itemsPerPage={productPerPage}
+            onSearch={handleSearchChange}
+            onFilterChange={(key, value) => {
+              if (key === 'category') return handleCategoryChange(value);
+              if (key === 'status') return handleStatusChange(value);
+            }}
+            onItemsPerPageChange={handleLimitChange}
+            onCreateNew={() => setShowCreateModal(true)}
           />
 
           {/* Table */}
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            {error && (
-              <Alert variant="error">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
             <ProductDataTable
               products={products}
               isLoading={isLoading}
               sortConfig={sortConfig}
               onSort={handleSort}
-              onView={handleOpenViewModal}
-              onEdit={handleOpenEditModal}
-              onDelete={handleOpenDeleteModal}
-              onToggleStatus={toggleProductStatus}
-              onCreateNew={handleOpenCreateModal}
+              onView={handleViewProduct}
+              onEdit={handleEditProductAction}
+              onDelete={(product) => {
+                setSelectedProduct(product);
+                setShowDeleteModal(true);
+              }}
+              onToggleStatus={handleChangeEstado}
             />
-
-            {/* Pagination */}
-            {!isLoading && products.length > 0 && (
-              <TablePagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.totalItems}
-                itemsPerPage={pagination.itemsPerPage}
-                onPageChange={handlePageChange}
-              />
-            )}
           </div>
+
+          {/* Modal de crear producto */}
+          <CreateProductDialog
+            isOpen={showCreateModal}
+            setIsOpen={setShowCreateModal}
+            productData={productData}
+            categories={categories}
+            errors={createErrors}
+            isLoading={isCreating}
+            handleSubmit={(e) => handleCreateSubmit(e, handleCreateSuccess)}
+            handleFieldChange={handleCreateFieldChange}
+          />
+
+          {/* Modal de editar producto */}
+          <EditProductDialog
+            isOpen={showEditModal}
+            setIsOpen={setShowEditModal}
+            productData={editProductData}
+            categories={categories}
+            errors={editErrors}
+            isLoading={isEditing}
+            handleSubmit={(e) => handleEditSubmit(e, handleEditSuccess)}
+            handleFieldChange={handleEditFieldChange}
+          />
+
+          {/* Modal de ver producto */}
+          <ViewProductDialog
+            isOpen={showViewModal}
+            onClose={() => setShowViewModal(false)}
+            product={selectedProduct}
+          />
+
+          {/* Modal de eliminar producto */}
+          <DeleteProductDialog
+            isOpen={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            product={selectedProduct}
+            onConfirm={(e) => handleDeleteProduct(selectedProduct, e, handleDeleteSuccess)}
+            isLoading={isDeleting}
+          />
         </div>
       </div>
-
-      {/* Modals */}
-      <CreateProductDialog
-        isOpen={isCreateModalOpen}
-        categories={categories}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateSubmit}
-      />
-
-      <EditProductDialog
-        isOpen={isEditModalOpen}
-        product={selectedProduct}
-        categories={categories}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedProduct(null);
-        }}
-        onSubmit={handleEditSubmit}
-      />
-
-      <ViewProductDialog
-        isOpen={isViewModalOpen}
-        product={selectedProduct}
-        onClose={() => setIsViewModalOpen(false)}
-      />
-
-      <DeleteProductDialog
-        isOpen={isDeleteModalOpen}
-        product={selectedProduct}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-      />
     </>
   );
-};
-
-export default ProductManagementForm;
+}

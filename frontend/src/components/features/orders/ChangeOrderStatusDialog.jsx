@@ -1,178 +1,115 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge/Badge';
-import { 
-  Modal, 
-  ModalHeader, 
-  ModalTitle, 
-  ModalBody, 
-  ModalFooter 
-} from '@/components/ui/modal/Modal';
-import { ArrowRight, CheckCircle, Clock, Truck, CreditCard } from 'lucide-react';
+import { FormDialog, FormSelect } from '@/components/common';
 import { formatCurrency } from '@/utils/format';
+import { useEffect, useMemo, useState } from 'react';
 
-const ORDER_STATUSES = [
-  { 
-    value: 'pendiente', 
-    label: 'Pendiente', 
-    icon: Clock, 
-    color: 'bg-yellow-100 text-yellow-700 border-yellow-300',
-    description: 'El pedido está esperando ser preparado'
-  },
-  { 
-    value: 'en_preparacion', 
-    label: 'En Preparación', 
-    icon: Truck, 
-    color: 'bg-blue-100 text-blue-700 border-blue-300',
-    description: 'El pedido está siendo preparado en cocina'
-  },
-  { 
-    value: 'entregado', 
-    label: 'Entregado', 
-    icon: CheckCircle, 
-    color: 'bg-green-100 text-green-700 border-green-300',
-    description: 'El pedido ha sido entregado a la mesa'
-  },
-  { 
-    value: 'pagado', 
-    label: 'Pagado', 
-    icon: CreditCard, 
-    color: 'bg-gray-100 text-gray-700 border-gray-300',
-    description: 'El pedido ha sido pagado y finalizado'
-  }
+const DEFAULT_STATUSES = [
+  { value: 'pendiente', label: 'Pendiente' },
+  { value: 'en_preparacion', label: 'En Preparación' },
+  { value: 'entregado', label: 'Entregado' },
+  { value: 'pagado', label: 'Pagado' },
 ];
 
-export const ChangeOrderStatusDialog = ({ 
-  isOpen, 
-  order, 
-  onClose, 
-  onConfirm 
+export const ChangeOrderStatusDialog = ({
+  isOpen,
+  order,
+  availableStatuses = [],
+  onClose,
+  onConfirm,
+  onSubmit,
+  isLoading = false,
 }) => {
-  const [selectedStatus, setSelectedStatus] = useState(order?.estado || 'pendiente');
+  const handleOpenChange = (open) => {
+    if (!open) onClose();
+  };
+
+  const [selectedStatus, setSelectedStatus] = useState(order?.estado || '');
+
+  useEffect(() => {
+    if (!isOpen || !order) return;
+    setSelectedStatus(order.estado || '');
+  }, [isOpen, order]);
+
+  const statusOptions = useMemo(() => {
+    return availableStatuses.length > 0 ? availableStatuses : DEFAULT_STATUSES;
+  }, [availableStatuses]);
+
+  const currentStatusLabel =
+    statusOptions.find((s) => s.value === order?.estado)?.label || order?.estado;
+  const nextStatusLabel =
+    statusOptions.find((s) => s.value === selectedStatus)?.label || selectedStatus;
+
+  const isFormValid = Boolean(selectedStatus) && selectedStatus !== order?.estado;
 
   if (!order) return null;
 
-  const currentStatusIndex = ORDER_STATUSES.findIndex(s => s.value === order.estado);
-  const newStatusIndex = ORDER_STATUSES.findIndex(s => s.value === selectedStatus);
+  const submitHandler = onSubmit ?? onConfirm;
 
-  const handleConfirm = () => {
-    onConfirm(selectedStatus);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!submitHandler) return;
+    submitHandler(selectedStatus);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalHeader onClose={onClose}>
-        <ModalTitle>Cambiar Estado del Pedido</ModalTitle>
-      </ModalHeader>
-
-      <ModalBody>
-        <div className="space-y-4">
-          {/* Información del pedido */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="text-sm text-gray-600">Pedido</p>
-                <p className="font-bold text-lg text-gray-900">#{order.id}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Mesa</p>
-                <p className="font-bold text-lg text-gray-900">{order.mesa_numero}</p>
-              </div>
+    <FormDialog
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
+      title="Cambiar Estado del Pedido"
+      description={order ? `Pedido #${order.id}` : 'Cambiar estado del pedido'}
+      onSubmit={handleSubmit}
+      submitText={isLoading ? 'Guardando...' : 'Guardar'}
+      cancelText="Cancelar"
+      isLoading={isLoading}
+      submitDisabled={!isFormValid || isLoading}
+    >
+      <div className="space-y-4">
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm text-gray-600">Pedido</p>
+              <p className="font-semibold text-gray-900">#{order.id}</p>
             </div>
-            <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-              <span className="text-sm text-gray-600">Total:</span>
-              <span className="font-bold text-lime-600">{formatCurrency(order.total)}</span>
-            </div>
-          </div>
-
-          {/* Estado actual */}
-          <div>
-            <Label className="mb-2 block">Estado Actual</Label>
-            <div className="flex items-center gap-2 p-3 border-2 border-gray-300 rounded-lg bg-gray-50">
-              {(() => {
-                const currentStatus = ORDER_STATUSES.find(s => s.value === order.estado);
-                const Icon = currentStatus?.icon || Clock;
-                return (
-                  <>
-                    <Icon className="h-5 w-5 text-gray-600" />
-                    <span className="font-medium text-gray-900">{currentStatus?.label}</span>
-                  </>
-                );
-              })()}
+            <div className="text-right">
+              <p className="text-sm text-gray-600">Mesa</p>
+              <p className="font-semibold text-gray-900">{order.mesa_numero}</p>
             </div>
           </div>
-
-          {/* Selección de nuevo estado */}
-          <div>
-            <Label className="mb-2 block">Nuevo Estado</Label>
-            <div className="space-y-2">
-              {ORDER_STATUSES.map((status, index) => {
-                const Icon = status.icon;
-                const isSelected = selectedStatus === status.value;
-                const isCurrent = order.estado === status.value;
-                const isDisabled = isCurrent;
-
-                return (
-                  <button
-                    key={status.value}
-                    type="button"
-                    onClick={() => !isDisabled && setSelectedStatus(status.value)}
-                    disabled={isDisabled}
-                    className={`
-                      w-full text-left p-3 rounded-lg border-2 transition-all
-                      ${isSelected && !isCurrent ? 'border-lime-500 bg-lime-50' : 'border-gray-200 hover:border-gray-300'}
-                      ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                    `}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${status.color}`}>
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold text-gray-900">{status.label}</p>
-                          {isCurrent && (
-                            <Badge variant="default" className="text-xs">Actual</Badge>
-                          )}
-                          {isSelected && !isCurrent && (
-                            <Badge variant="success" className="text-xs">Seleccionado</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{status.description}</p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+          <div className="flex justify-between items-center pt-3 mt-3 border-t border-gray-200">
+            <span className="text-sm text-gray-600">Total:</span>
+            <span className="font-semibold text-gray-900">{formatCurrency(order.total)}</span>
           </div>
-
-          {/* Indicador de progreso */}
-          {selectedStatus !== order.estado && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-              <ArrowRight className="h-5 w-5 text-blue-600" />
-              <p className="text-sm text-blue-800">
-                El estado cambiará de <strong>{ORDER_STATUSES[currentStatusIndex]?.label}</strong> a{' '}
-                <strong>{ORDER_STATUSES[newStatusIndex]?.label}</strong>
-              </p>
-            </div>
-          )}
         </div>
-      </ModalBody>
 
-      <ModalFooter>
-        <Button onClick={onClose} variant="ghost">
-          Cancelar
-        </Button>
-        <Button 
-          onClick={handleConfirm}
-          className="bg-lime-600 hover:bg-lime-700 text-white"
-          disabled={selectedStatus === order.estado}
+        <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <p className="text-sm text-gray-600">Estado actual</p>
+          <p className="font-medium text-gray-900">{currentStatusLabel}</p>
+        </div>
+
+        <FormSelect
+          label="Nuevo Estado"
+          id="status"
+          required
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          disabled={isLoading}
         >
-          Confirmar Cambio
-        </Button>
-      </ModalFooter>
-    </Modal>
+          <option value="">Seleccionar estado</option>
+          {statusOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </FormSelect>
+
+        {selectedStatus && selectedStatus !== order.estado && (
+          <div className="border-l-4 border-gray-300 bg-gray-50 p-4 rounded-md">
+            <p className="text-sm text-gray-800">
+              El estado cambiará a{' '}
+              <span className="font-semibold text-gray-900">{nextStatusLabel}</span>.
+            </p>
+          </div>
+        )}
+      </div>
+    </FormDialog>
   );
 };

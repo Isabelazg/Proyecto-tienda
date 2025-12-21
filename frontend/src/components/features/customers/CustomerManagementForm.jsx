@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
 import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { CustomerFiltersBar } from './CustomerFiltersBar';
 import { CustomerDataTable } from './CustomerDataTable';
@@ -8,11 +8,9 @@ import { CreateCustomerDialog } from './CreateCustomerDialog';
 import { EditCustomerDialog } from './EditCustomerDialog';
 import { ViewCustomerDialog } from './ViewCustomerDialog';
 import { DeleteCustomerDialog } from './DeleteCustomerDialog';
-import { CustomerPurchaseHistoryDialog } from './CustomerPurchaseHistoryDialog';
 import { useCustomerTable } from '@/hooks/customers/useCustomerTable';
 import { useCreateCustomer } from '@/hooks/customers/useCreateCustomer';
 import { useEditCustomer } from '@/hooks/customers/useEditCustomer';
-import { useDeleteCustomer } from '@/hooks/customers/useDeleteCustomer';
 
 const CustomerManagementForm = () => {
   const {
@@ -26,24 +24,37 @@ const CustomerManagementForm = () => {
     handleFilterChange,
     handleSort,
     handlePageChange,
+    handleItemsPerPageChange,
     toggleCustomerStatus,
     refetch
   } = useCustomerTable();
-
-  const { createCustomer } = useCreateCustomer(refetch);
-  const { updateCustomer } = useEditCustomer(refetch);
-  const { deleteCustomer } = useDeleteCustomer(refetch);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const editDialog = useEditCustomer({
+    isOpen: isEditModalOpen,
+    customer: selectedCustomer,
+    onSuccess: refetch
+  });
+
+  const createDialog = useCreateCustomer({
+    isOpen: isCreateModalOpen,
+    onSuccess: refetch
+  });
+
+  const deleteActions = useEditCustomer({ onSuccess: refetch });
 
   const handleOpenCreateModal = () => {
     setSelectedCustomer(null);
     setIsCreateModalOpen(true);
+  };
+
+  const handleSetIsCreateOpen = (open) => {
+    setIsCreateModalOpen(open);
   };
 
   const handleOpenEditModal = (customer) => {
@@ -51,15 +62,16 @@ const CustomerManagementForm = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleSetIsEditOpen = (open) => {
+    setIsEditModalOpen(open);
+    if (!open) {
+      setSelectedCustomer(null);
+    }
+  };
+
   const handleOpenViewModal = (customer) => {
     setSelectedCustomer(customer);
     setIsViewModalOpen(true);
-  };
-
-  const handleOpenHistoryModal = (customer) => {
-    setSelectedCustomer(customer);
-    setIsHistoryModalOpen(true);
-    setIsViewModalOpen(false); // Cerrar el modal de vista si está abierto
   };
 
   const handleOpenDeleteModal = (customer) => {
@@ -67,26 +79,13 @@ const CustomerManagementForm = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleCreateSubmit = async (formData) => {
-    const result = await createCustomer(formData);
-    if (result.success) {
-      setIsCreateModalOpen(false);
-    }
-  };
-
-  const handleEditSubmit = async (formData) => {
-    const result = await updateCustomer(selectedCustomer.id, formData);
-    if (result.success) {
-      setIsEditModalOpen(false);
-      setSelectedCustomer(null);
-    }
-  };
-
   const handleConfirmDelete = async () => {
     if (selectedCustomer) {
-      await deleteCustomer(selectedCustomer.id);
-      setIsDeleteModalOpen(false);
-      setSelectedCustomer(null);
+      const result = await deleteActions.deleteCustomer(selectedCustomer.id);
+      if (result?.success === true) {
+        setIsDeleteModalOpen(false);
+        setSelectedCustomer(null);
+      }
     }
   };
 
@@ -111,8 +110,10 @@ const CustomerManagementForm = () => {
             filters={filters}
             totalItems={pagination.totalItems}
             isLoading={isLoading}
+            itemsPerPage={pagination.itemsPerPage}
             onSearch={handleSearch}
             onFilterChange={handleFilterChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
             onCreateNew={handleOpenCreateModal}
           />
 
@@ -134,7 +135,7 @@ const CustomerManagementForm = () => {
               onView={handleOpenViewModal}
               onEdit={handleOpenEditModal}
               onDelete={handleOpenDeleteModal}
-              onToggleStatus={toggleCustomerStatus}
+              onToggleStatus={(customer) => toggleCustomerStatus(customer.id)}
               onCreateNew={handleOpenCreateModal}
             />
           </div>
@@ -155,18 +156,24 @@ const CustomerManagementForm = () => {
       {/* Modals */}
       <CreateCustomerDialog
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateSubmit}
+        setIsOpen={handleSetIsCreateOpen}
+        formData={createDialog.formData}
+        errors={createDialog.errors}
+        isLoading={createDialog.isLoading}
+        isFormValid={createDialog.isFormValid}
+        handleFieldChange={createDialog.handleFieldChange}
+        handleSubmit={createDialog.handleSubmit}
       />
 
       <EditCustomerDialog
         isOpen={isEditModalOpen}
-        customer={selectedCustomer}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedCustomer(null);
-        }}
-        onSubmit={handleEditSubmit}
+        setIsOpen={handleSetIsEditOpen}
+        formData={editDialog.formData}
+        errors={editDialog.errors}
+        isLoading={editDialog.isLoading}
+        isFormValid={editDialog.isFormValid}
+        handleFieldChange={editDialog.handleFieldChange}
+        handleSubmit={editDialog.handleSubmit}
       />
 
       <ViewCustomerDialog
@@ -174,16 +181,6 @@ const CustomerManagementForm = () => {
         customer={selectedCustomer}
         onClose={() => {
           setIsViewModalOpen(false);
-          setSelectedCustomer(null);
-        }}
-        onViewHistory={handleOpenHistoryModal}
-      />
-
-      <CustomerPurchaseHistoryDialog
-        isOpen={isHistoryModalOpen}
-        customer={selectedCustomer}
-        onClose={() => {
-          setIsHistoryModalOpen(false);
           setSelectedCustomer(null);
         }}
       />
@@ -196,6 +193,7 @@ const CustomerManagementForm = () => {
           setSelectedCustomer(null);
         }}
         onConfirm={handleConfirmDelete}
+        isLoading={deleteActions.isDeleting}
       />
     </>
   );

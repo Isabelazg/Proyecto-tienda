@@ -5,7 +5,7 @@ import {
   TableRow, 
   TableHead, 
   TableCell
-} from '@/components/ui/table/Table';
+} from '@/components/ui/Table';
 import LoadingState from '../LoadingState/LoadingState';
 import EmptyState from '../EmptyState/EmptyState';
 

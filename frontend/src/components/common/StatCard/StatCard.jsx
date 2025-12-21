@@ -1,5 +1,5 @@
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 
 /**

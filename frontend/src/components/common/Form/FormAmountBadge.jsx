@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge/Badge";
+import { Badge } from "@/components/ui/Badge";
 
 /**
  * Badge para mostrar montos con variantes

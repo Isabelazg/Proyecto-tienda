@@ -1,193 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select/Select';
-import { Textarea } from '@/components/ui/textarea/Textarea';
-import { 
-  Modal, 
-  ModalHeader, 
-  ModalTitle, 
-  ModalBody, 
-  ModalFooter 
-} from '@/components/ui/modal/Modal';
+import { CreditCard, FileText, Mail, MapPin, Phone, User } from 'lucide-react';
+import { FormDialog, FormInput, FormSelect, FormTextarea } from '@/components/common';
 
 export const CreateCustomerDialog = ({ 
-  isOpen, 
-  onClose, 
-  onSubmit 
+  isOpen,
+  setIsOpen,
+  formData,
+  errors,
+  isLoading = false,
+  isFormValid,
+  handleFieldChange,
+  handleSubmit
 }) => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    telefono: '',
-    direccion: '',
-    documento: '',
-    tipo_documento: 'CC',
-    estado: true,
-  });
-  const [formErrors, setFormErrors] = useState({});
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    if (isOpen) {
-      setFormData({
-        nombre: '',
-        email: '',
-        telefono: '',
-        direccion: '',
-        documento: '',
-        tipo_documento: 'CC',
-        estado: true,
-      });
-      setFormErrors({});
+    try {
+      const result = await handleSubmit();
+      if (result?.success === true) {
+        setIsOpen(false);
+      }
+    } catch {
+      // No cerrar el diálogo en caso de error
     }
-  }, [isOpen]);
-
-  const validateForm = () => {
-    const errors = {};
-
-    if (!formData.nombre.trim()) {
-      errors.nombre = 'El nombre es requerido';
-    }
-
-    if (!formData.email.trim()) {
-      errors.email = 'El email es requerido';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Email inválido';
-    }
-
-    if (!formData.telefono.trim()) {
-      errors.telefono = 'El teléfono es requerido';
-    } else if (!/^\d{10}$/.test(formData.telefono)) {
-      errors.telefono = 'El teléfono debe tener 10 dígitos';
-    }
-
-    if (!formData.documento.trim()) {
-      errors.documento = 'El documento es requerido';
-    }
-
-    if (!formData.tipo_documento) {
-      errors.tipo_documento = 'El tipo de documento es requerido';
-    }
-
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-
-    onSubmit(formData);
+  const handleOpenChange = (open) => {
+    setIsOpen(open);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalHeader onClose={onClose}>
-        <ModalTitle>Registrar Nuevo Cliente</ModalTitle>
-      </ModalHeader>
+    <FormDialog
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
+      title="Registrar Nuevo Cliente"
+      description="Completa los siguientes campos para registrar un cliente"
+      onSubmit={handleFormSubmit}
+      submitText={isLoading ? 'Registrando...' : 'Registrar Cliente'}
+      cancelText="Cancelar"
+      maxWidth="2xl"
+      isLoading={isLoading}
+      submitDisabled={!isFormValid || isLoading}
+    >
+      <div className="space-y-4">
+        <FormInput
+          label="Nombre Completo"
+          id="nombre"
+          placeholder="Ej: María García Rodríguez"
+          value={formData?.nombre || ''}
+          onChange={(e) => handleFieldChange('nombre', e.target.value)}
+          error={errors?.nombre}
+          icon={User}
+          required
+          disabled={isLoading}
+        />
 
-      <ModalBody>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nombre">Nombre Completo *</Label>
-            <Input
-              id="nombre"
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              placeholder="Ej: María García Rodríguez"
-            />
-            {formErrors.nombre && (
-              <p className="text-red-600 text-sm mt-1">{formErrors.nombre}</p>
-            )}
-          </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormSelect
+            label="Tipo de Documento"
+            id="tipo_documento"
+            value={formData?.tipo_documento || 'CC'}
+            onChange={(e) => handleFieldChange('tipo_documento', e.target.value)}
+            error={errors?.tipo_documento}
+            icon={FileText}
+            required
+            disabled={isLoading}
+            options={[
+              { value: 'CC', label: 'Cédula de Ciudadanía' },
+              { value: 'CE', label: 'Cédula de Extranjería' },
+              { value: 'NIT', label: 'NIT' },
+              { value: 'PP', label: 'Pasaporte' }
+            ]}
+          />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="tipo_documento">Tipo de Documento *</Label>
-              <Select
-                id="tipo_documento"
-                value={formData.tipo_documento}
-                onChange={(e) => setFormData({ ...formData, tipo_documento: e.target.value })}
-              >
-                <option value="CC">Cédula de Ciudadanía</option>
-                <option value="CE">Cédula de Extranjería</option>
-                <option value="NIT">NIT</option>
-                <option value="PP">Pasaporte</option>
-              </Select>
-              {formErrors.tipo_documento && (
-                <p className="text-red-600 text-sm mt-1">{formErrors.tipo_documento}</p>
-              )}
-            </div>
+          <FormInput
+            label="Número de Documento"
+            id="documento"
+            placeholder="1234567890"
+            value={formData?.documento || ''}
+            onChange={(e) => handleFieldChange('documento', e.target.value)}
+            error={errors?.documento}
+            icon={CreditCard}
+            required
+            disabled={isLoading}
+          />
+        </div>
 
-            <div>
-              <Label htmlFor="documento">Número de Documento *</Label>
-              <Input
-                id="documento"
-                value={formData.documento}
-                onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-                placeholder="1234567890"
-              />
-              {formErrors.documento && (
-                <p className="text-red-600 text-sm mt-1">{formErrors.documento}</p>
-              )}
-            </div>
-          </div>
+        <FormInput
+          label="Email"
+          id="email"
+          type="email"
+          placeholder="ejemplo@email.com"
+          value={formData?.email || ''}
+          onChange={(e) => handleFieldChange('email', e.target.value)}
+          error={errors?.email}
+          icon={Mail}
+          required
+          disabled={isLoading}
+        />
 
-          <div>
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="ejemplo@email.com"
-            />
-            {formErrors.email && (
-              <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>
-            )}
-          </div>
+        <FormInput
+          label="Teléfono"
+          id="telefono"
+          type="tel"
+          placeholder="3101234567"
+          value={formData?.telefono || ''}
+          onChange={(e) => handleFieldChange('telefono', e.target.value)}
+          error={errors?.telefono}
+          icon={Phone}
+          required
+          maxLength={10}
+          disabled={isLoading}
+        />
 
-          <div>
-            <Label htmlFor="telefono">Teléfono *</Label>
-            <Input
-              id="telefono"
-              type="tel"
-              value={formData.telefono}
-              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-              placeholder="3101234567"
-              maxLength="10"
-            />
-            {formErrors.telefono && (
-              <p className="text-red-600 text-sm mt-1">{formErrors.telefono}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="direccion">Dirección</Label>
-            <Textarea
-              id="direccion"
-              value={formData.direccion}
-              onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-              placeholder="Calle 45 #12-34, Bogotá"
-              rows={2}
-            />
-          </div>
-        </form>
-      </ModalBody>
-
-      <ModalFooter>
-        <Button onClick={onClose} variant="ghost">
-          Cancelar
-        </Button>
-        <Button 
-          onClick={handleSubmit}
-          className="bg-black text-white hover:bg-gray-900"
-        >
-          Registrar Cliente
-        </Button>
-      </ModalFooter>
-    </Modal>
+        <FormTextarea
+          label="Dirección"
+          id="direccion"
+          placeholder="Calle 45 #12-34, Bogotá"
+          value={formData?.direccion || ''}
+          onChange={(e) => handleFieldChange('direccion', e.target.value)}
+          error={errors?.direccion}
+          icon={MapPin}
+          rows={2}
+          disabled={isLoading}
+        />
+      </div>
+    </FormDialog>
   );
 };

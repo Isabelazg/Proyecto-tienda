@@ -7,13 +7,15 @@ export const useOrderValidation = () => {
       errors.mesa_id = 'La mesa es requerida';
     }
 
-    // Validar mesero
-    if (!data.mesero || data.mesero.trim() === '') {
-      errors.mesero = 'El nombre del mesero es requerido';
-    } else if (data.mesero.length < 2) {
-      errors.mesero = 'El nombre del mesero debe tener al menos 2 caracteres';
-    } else if (data.mesero.length > 100) {
-      errors.mesero = 'El nombre del mesero no puede exceder 100 caracteres';
+    // Validar mesero (opcional: puede venir del usuario autenticado)
+    if (data.mesero && typeof data.mesero === 'string') {
+      const trimmed = data.mesero.trim();
+
+      if (trimmed.length > 0 && trimmed.length < 2) {
+        errors.mesero = 'El nombre del mesero debe tener al menos 2 caracteres';
+      } else if (trimmed.length > 100) {
+        errors.mesero = 'El nombre del mesero no puede exceder 100 caracteres';
+      }
     }
 
     // Validar items

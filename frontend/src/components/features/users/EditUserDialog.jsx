@@ -1,88 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select } from '@/components/ui/select/Select';
-import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui/modal/Modal';
+import { UserCircle, Mail, Lock, Shield } from 'lucide-react';
+import { FormDialog, FormInput, FormSelect } from '@/components/common';
 import { ROLES } from '@/utils/roles';
 
-export const EditUserDialog = ({ isOpen, user, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    password: '',
-    role_id: 2,
-    estado: true,
-  });
-  const [formErrors, setFormErrors] = useState({});
+export const EditUserDialog = ({
+  isOpen,
+  setIsOpen,
+  formData = {},
+  errors = {},
+  isLoading = false,
+  isFormValid = false,
+  handleFieldChange,
+  handleSubmit
+}) => {
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
 
-  useEffect(() => {
-    if (isOpen && user) {
-      setFormData({
-        nombre: user.nombre,
-        email: user.email,
-        password: '',
-        role_id: user.role.id,
-        estado: user.estado,
-      });
-      setFormErrors({});
+    try {
+      const result = await handleSubmit();
+      if (result?.success === true) {
+        setIsOpen(false);
+      }
+    } catch {
+      // No cerrar el diálogo en caso de error
     }
-  }, [isOpen, user]);
-
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.nombre.trim()) errors.nombre = 'El nombre es requerido';
-    if (!formData.email.trim()) errors.email = 'El email es requerido';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = 'Email inválido';
-    if (formData.password && formData.password.length < 6) errors.password = 'La contraseña debe tener al menos 6 caracteres';
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    onSubmit(formData);
+  const handleOpenChange = (open) => {
+    setIsOpen(open);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalHeader onClose={onClose}>
-        <ModalTitle>Editar Usuario</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="nombre">Nombre Completo *</Label>
-            <Input id="nombre" value={formData.nombre} onChange={(e) => setFormData({ ...formData, nombre: e.target.value })} placeholder="Ej: Juan Pérez" />
-            {formErrors.nombre && <p className="text-red-600 text-sm mt-1">{formErrors.nombre}</p>}
-          </div>
-          <div>
-            <Label htmlFor="email">Email *</Label>
-            <Input id="email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="usuario@tienda.com" />
-            {formErrors.email && <p className="text-red-600 text-sm mt-1">{formErrors.email}</p>}
-          </div>
-          <div>
-            <Label htmlFor="password">Nueva Contraseña (dejar vacío para no cambiar)</Label>
-            <Input id="password" type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} placeholder="••••••••" />
-            {formErrors.password && <p className="text-red-600 text-sm mt-1">{formErrors.password}</p>}
-          </div>
-          <div>
-            <Label htmlFor="role">Rol *</Label>
-            <Select id="role" value={formData.role_id} onChange={(e) => setFormData({ ...formData, role_id: parseInt(e.target.value) })}>
-              <option value={1}>{ROLES.ADMINISTRADOR}</option>
-              <option value={2}>{ROLES.EMPLEADO}</option>
-              <option value={3}>{ROLES.MESERO}</option>
-            </Select>
-          </div>
-        </form>
-      </ModalBody>
-      <ModalFooter>
-        <Button onClick={onClose} variant="ghost">Cancelar</Button>
-        <Button onClick={handleSubmit} className="bg-black text-white hover:bg-gray-900">
-          Guardar Cambios
-        </Button>
-      </ModalFooter>
-    </Modal>
+    <FormDialog
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
+      title="Editar Usuario"
+      description="Actualiza la información del usuario"
+      onSubmit={handleFormSubmit}
+      submitText={isLoading ? 'Guardando...' : 'Guardar Cambios'}
+      cancelText="Cancelar"
+      maxWidth="2xl"
+      isLoading={isLoading}
+      submitDisabled={!isFormValid || isLoading}
+    >
+      <div className="space-y-4">
+        <FormInput
+          label="Nombre Completo"
+          id="nombre"
+          placeholder="Ej: Juan Pérez"
+          value={formData.nombre || ''}
+          onChange={(e) => handleFieldChange('nombre', e.target.value)}
+          error={errors.nombre}
+          icon={UserCircle}
+          required
+          disabled={isLoading}
+          autoFocus
+        />
+
+        <FormInput
+          label="Email"
+          id="email"
+          type="email"
+          placeholder="usuario@tienda.com"
+          value={formData.email || ''}
+          onChange={(e) => handleFieldChange('email', e.target.value)}
+          error={errors.email}
+          icon={Mail}
+          required
+          disabled={isLoading}
+        />
+
+        <FormInput
+          label="Nueva Contraseña (dejar vacío para no cambiar)"
+          id="password"
+          type="password"
+          placeholder="••••••••"
+          value={formData.password || ''}
+          onChange={(e) => handleFieldChange('password', e.target.value)}
+          error={errors.password}
+          icon={Lock}
+          disabled={isLoading}
+        />
+
+        <FormSelect
+          label="Rol"
+          id="role_id"
+          value={formData.role_id ?? 2}
+          onChange={(e) => handleFieldChange('role_id', Number(e.target.value))}
+          error={errors.role_id}
+          icon={Shield}
+          required
+          disabled={isLoading}
+        >
+          <option value={1}>{ROLES.ADMINISTRADOR}</option>
+          <option value={2}>{ROLES.EMPLEADO}</option>
+          <option value={3}>{ROLES.MESERO}</option>
+        </FormSelect>
+      </div>
+    </FormDialog>
   );
 };

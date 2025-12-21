@@ -1,4 +1,4 @@
-import { Edit, Trash2, Eye } from 'lucide-react';
+import { Edit, Trash2, Eye, Package } from 'lucide-react';
 import { DataTable, TableActionsDropdown, FormStatusBadge } from '@/components/common';
 import { ENTITY_CONFIG, STATUS_CONFIGS } from '@/config';
 import { formatCurrency } from '@/utils/format';
@@ -106,7 +106,7 @@ export const ProductDataTable = ({
               icon: Trash2,
               label: 'Eliminar',
               onClick: () => onDelete(product),
-              destructive: true
+              variant: 'destructive'
             }
           ]}
         />

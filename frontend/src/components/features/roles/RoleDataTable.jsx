@@ -1,8 +1,8 @@
-import { Edit, Trash2, Eye, Shield, Users, Check, X as XIcon } from 'lucide-react';
+import { Edit, Trash2, Eye, Users, Check, X as XIcon } from 'lucide-react';
 import { DataTable, TableActionsDropdown, IconCell, FormStatusBadge } from '@/components/common';
 import { ENTITY_CONFIG, STATUS_CONFIGS, CONTAINER_STYLES, ICON_STYLES } from '@/config';
 import { formatDate } from '@/utils/format';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 export const RoleDataTable = ({ 
   roles, 
@@ -72,7 +72,7 @@ export const RoleDataTable = ({
       label: 'Estado',
       align: 'center',
       render: (estado) => (
-        <FormStatusBadge status={estado} config={STATUS_CONFIGS.general} />
+        <FormStatusBadge status={estado ? 'activo' : 'inactivo'} config={STATUS_CONFIGS.general} />
       )
     },
     {
@@ -95,14 +95,13 @@ export const RoleDataTable = ({
             {
               icon: role?.estado ? XIcon : Check,
               label: role?.estado ? 'Desactivar' : 'Activar',
-              onClick: () => onToggleStatus(role.id)
+              onClick: () => onToggleStatus?.(role.id)
             },
             {
               icon: Trash2,
               label: 'Eliminar',
               onClick: () => onDelete(role),
-              destructive: true,
-              disabled: role?.id <= 3 // No permitir eliminar roles básicos
+              variant: 'destructive'
             }
           ]}
         />

@@ -1,8 +1,6 @@
-import React from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select/Select';
-import { SearchBar } from '@/components/common';
+import { SearchBar, FilterSelect } from '@/components/common';
 
 export const RoleFiltersBar = ({ 
   filters, 
@@ -26,14 +24,14 @@ export const RoleFiltersBar = ({
 
         {/* Status Filter */}
         <div>
-          <Select
-            value={filters.status}
+          <FilterSelect
+            value={filters.status || 'all'}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
             <option value="all">Todos los estados</option>
             <option value="active">Activos</option>
             <option value="inactive">Inactivos</option>
-          </Select>
+          </FilterSelect>
         </div>
       </div>
 
@@ -44,7 +42,7 @@ export const RoleFiltersBar = ({
         </div>
         <Button
           onClick={onCreateNew}
-          className="bg-black text-white hover:bg-gray-900"
+          variant="default"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Rol

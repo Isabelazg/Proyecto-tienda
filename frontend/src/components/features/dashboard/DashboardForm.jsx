@@ -11,9 +11,9 @@ import {
 import Navbar from '@/components/layout/Navbar/Navbar';
 import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/common';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card/Card';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
+import { Badge } from '@/components/ui/Badge';
 import { useDashboard } from '@/hooks/dashboard/useDashboard';
 import { formatCurrency, formatDate } from '@/utils/format';
 import { STAT_COLORS } from '@/utils/constants';

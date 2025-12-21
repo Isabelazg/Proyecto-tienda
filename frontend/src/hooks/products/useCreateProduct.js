@@ -1,21 +1,60 @@
 import { useState } from 'react';
 import { useProductValidation } from './useProductValidation';
 
-export const useCreateProduct = (onSuccess) => {
+export const useCreateProduct = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [productData, setProductData] = useState({
+    nombre: '',
+    descripcion: '',
+    precio: '',
+    stock: '',
+    categoria_id: '',
+    imagen: '',
+    estado: true
+  });
   const { validateProductData } = useProductValidation();
 
-  const createProduct = async (productData) => {
+  const handleFieldChange = (field, value) => {
+    setProductData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Limpiar error del campo al cambiarlo
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const clearForm = () => {
+    setProductData({
+      nombre: '',
+      descripcion: '',
+      precio: '',
+      stock: '',
+      categoria_id: '',
+      imagen: '',
+      estado: true
+    });
+    setErrors({});
+  };
+
+  const handleSubmit = async (e, onSuccess) => {
+    e.preventDefault();
+    
     const validation = validateProductData(productData);
     
     if (!validation.isValid) {
-      setError(validation.errors);
+      setErrors(validation.errors);
       return { success: false, errors: validation.errors };
     }
 
     setIsLoading(true);
-    setError(null);
+    setErrors({});
 
     try {
       // TODO: Reemplazar con llamada real a la API
@@ -27,10 +66,11 @@ export const useCreateProduct = (onSuccess) => {
         await onSuccess();
       }
 
+      clearForm();
       return { success: true, message: 'Producto creado exitosamente' };
     } catch (err) {
       console.error('Error creating product:', err);
-      setError('Error al crear el producto');
+      setErrors({ general: 'Error al crear el producto' });
       return { success: false, message: 'Error al crear el producto' };
     } finally {
       setIsLoading(false);
@@ -38,8 +78,11 @@ export const useCreateProduct = (onSuccess) => {
   };
 
   return {
-    createProduct,
+    productData,
+    errors,
     isLoading,
-    error
+    handleFieldChange,
+    clearForm,
+    handleSubmit
   };
 };

@@ -28,8 +28,8 @@ export const OrderDataTable = ({
       label: 'Mesa',
       render: (mesa_numero) => mesa_numero ? (
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-lime-100 dark:bg-lime-900/20 rounded-lg flex items-center justify-center">
-            <span className="text-lime-700 font-bold text-sm">{mesa_numero}</span>
+          <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+            <span className="text-gray-700 dark:text-gray-300 font-bold text-sm">{mesa_numero}</span>
           </div>
           <span className="text-gray-700 dark:text-slate-300">Mesa {mesa_numero}</span>
         </div>
@@ -112,6 +112,8 @@ export const OrderDataTable = ({
       columns={columns}
       data={orders}
       isLoading={isLoading}
+      sortConfig={sortConfig}
+      onSort={onSort}
       loadingMessage={`Cargando ${entityConfig.namePlural.toLowerCase()}...`}
       emptyTitle={`No se encontraron ${entityConfig.namePlural.toLowerCase()}`}
       emptyDescription={`No hay ${entityConfig.namePlural.toLowerCase()} que coincidan con los filtros aplicados.`}

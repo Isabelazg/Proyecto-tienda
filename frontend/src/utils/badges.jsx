@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 // Badge para estados de venta
 export const getSaleStatusBadge = (estado) => {

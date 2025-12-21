@@ -1,20 +1,15 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
+import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter } from '@/components/ui/modal/Modal';
 import { Button } from '@/components/ui/button';
-import { 
-  Modal, 
-  ModalHeader, 
-  ModalTitle, 
-  ModalBody, 
-  ModalFooter 
-} from '@/components/ui/modal/Modal';
 import { formatCurrency } from '@/utils/format';
 
 export const CancelSaleDialog = ({ 
   isOpen, 
   sale, 
   onClose, 
-  onConfirm 
+  onConfirm,
+  isLoading = false
 }) => {
   if (!sale) return null;
 
@@ -48,14 +43,19 @@ export const CancelSaleDialog = ({
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={onClose} variant="ghost">
+        <Button 
+          onClick={onClose} 
+          variant="outline"
+          disabled={isLoading}
+        >
           Cancelar
         </Button>
         <Button 
           onClick={onConfirm}
-          className="bg-red-600 text-white hover:bg-red-700"
+          disabled={isLoading}
+          className="bg-red-600 hover:bg-red-700 text-white"
         >
-          Anular Venta
+          {isLoading ? "Procesando..." : "Anular Venta"}
         </Button>
       </ModalFooter>
     </Modal>

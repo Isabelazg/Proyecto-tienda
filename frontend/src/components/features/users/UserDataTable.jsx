@@ -1,8 +1,8 @@
-import { Edit, Trash2, Eye, Check, X as XIcon } from 'lucide-react';
+import { Edit, Trash2, Eye } from 'lucide-react';
 import { DataTable, TableActionsDropdown, FormStatusBadge } from '@/components/common';
 import { ENTITY_CONFIG, STATUS_CONFIGS } from '@/config';
 import { formatDate } from '@/utils/format';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Badge } from '@/components/ui/Badge';
 
 const getRoleBadge = (roleName) => {
   if (!roleName) return <Badge variant="default">Sin rol</Badge>;
@@ -72,11 +72,13 @@ export const UsersDataTable = ({
       key: 'estado',
       label: 'Estado',
       align: 'center',
-      render: (estado) => (
-        <FormStatusBadge 
-          status={estado} 
-          config={STATUS_CONFIGS.general} 
-        />
+      render: (estado, user) => (
+        <div className="cursor-pointer inline-block" onClick={() => onToggleStatus(user)}>
+          <FormStatusBadge 
+            status={estado ? 'activo' : 'inactivo'} 
+            config={STATUS_CONFIGS.general} 
+          />
+        </div>
       )
     },
     {
@@ -97,15 +99,10 @@ export const UsersDataTable = ({
               onClick: () => onEdit(user)
             },
             {
-              icon: user?.estado ? XIcon : Check,
-              label: user?.estado ? 'Desactivar' : 'Activar',
-              onClick: () => onToggleStatus(user.id)
-            },
-            {
               icon: Trash2,
               label: 'Eliminar',
               onClick: () => onDelete(user),
-              destructive: true
+              variant: 'destructive'
             }
           ]}
         />

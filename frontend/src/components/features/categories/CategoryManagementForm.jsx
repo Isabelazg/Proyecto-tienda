@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar/Navbar';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert/Alert';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/Alert';
 import TablePagination from '@/components/common/TablePagination/TablePagination';
 import { CategoryFiltersBar } from './CategoryFiltersBar';
 import { CategoryDataTable } from './CategoryDataTable';
@@ -11,7 +11,6 @@ import { DeleteCategoryDialog } from './DeleteCategoryDialog';
 import { useCategoryTable } from '@/hooks/categories/useCategoryTable';
 import { useCreateCategory } from '@/hooks/categories/useCreateCategory';
 import { useEditCategory } from '@/hooks/categories/useEditCategory';
-import { useDeleteCategory } from '@/hooks/categories/useDeleteCategory';
 
 const CategoryManagementForm = () => {
   const {
@@ -29,15 +28,24 @@ const CategoryManagementForm = () => {
     refetch
   } = useCategoryTable();
 
-  const { createCategory } = useCreateCategory(refetch);
-  const { updateCategory } = useEditCategory(refetch);
-  const { deleteCategory } = useDeleteCategory(refetch);
-
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const editDialog = useEditCategory({
+    isOpen: isEditModalOpen,
+    category: selectedCategory,
+    onSuccess: refetch
+  });
+
+  const createDialog = useCreateCategory({
+    isOpen: isFormModalOpen,
+    onSuccess: refetch
+  });
+
+  const deleteActions = useEditCategory({ onSuccess: refetch });
 
   const handleOpenCreateModal = () => {
     setSelectedCategory(null);
@@ -47,6 +55,13 @@ const CategoryManagementForm = () => {
   const handleOpenEditModal = (category) => {
     setSelectedCategory(category);
     setIsEditModalOpen(true);
+  };
+
+  const handleSetIsEditOpen = (open) => {
+    setIsEditModalOpen(open);
+    if (!open) {
+      setSelectedCategory(null);
+    }
   };
 
   const handleOpenViewModal = (category) => {
@@ -59,26 +74,13 @@ const CategoryManagementForm = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleCreateSubmit = async (formData) => {
-    const result = await createCategory(formData);
-    if (result.success) {
-      setIsFormModalOpen(false);
-    }
-  };
-
-  const handleEditSubmit = async (formData) => {
-    const result = await updateCategory(selectedCategory.id, formData);
-    if (result.success) {
-      setIsEditModalOpen(false);
-      setSelectedCategory(null);
-    }
-  };
-
   const handleConfirmDelete = async () => {
     if (selectedCategory) {
-      await deleteCategory(selectedCategory.id);
-      setIsDeleteModalOpen(false);
-      setSelectedCategory(null);
+      const result = await deleteActions.deleteCategory(selectedCategory.id);
+      if (result?.success === true) {
+        setIsDeleteModalOpen(false);
+        setSelectedCategory(null);
+      }
     }
   };
 
@@ -147,18 +149,24 @@ const CategoryManagementForm = () => {
       {/* Modals */}
       <CreateCategoryDialog
         isOpen={isFormModalOpen}
-        onClose={() => setIsFormModalOpen(false)}
-        onSubmit={handleCreateSubmit}
+        setIsOpen={setIsFormModalOpen}
+        formData={createDialog.formData}
+        errors={createDialog.errors}
+        isLoading={createDialog.isLoading}
+        isFormValid={createDialog.isFormValid}
+        handleFieldChange={createDialog.handleFieldChange}
+        handleSubmit={createDialog.handleSubmit}
       />
 
       <EditCategoryDialog
         isOpen={isEditModalOpen}
-        category={selectedCategory}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedCategory(null);
-        }}
-        onSubmit={handleEditSubmit}
+        setIsOpen={handleSetIsEditOpen}
+        formData={editDialog.formData}
+        errors={editDialog.errors}
+        isLoading={editDialog.isLoading}
+        isFormValid={editDialog.isFormValid}
+        handleFieldChange={editDialog.handleFieldChange}
+        handleSubmit={editDialog.handleSubmit}
       />
 
       <ViewCategoryDialog
@@ -178,6 +186,7 @@ const CategoryManagementForm = () => {
           setSelectedCategory(null);
         }}
         onConfirm={handleConfirmDelete}
+        isLoading={deleteActions.isDeleting}
       />
     </>
   );

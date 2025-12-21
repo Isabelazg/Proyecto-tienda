@@ -169,6 +169,14 @@ export const useUserTable = () => {
     setPagination({ ...pagination, currentPage: page });
   };
 
+  const handleItemsPerPageChange = (itemsPerPage) => {
+    setPagination({
+      ...pagination,
+      itemsPerPage: Number(itemsPerPage),
+      currentPage: 1,
+    });
+  };
+
   const toggleUserStatus = async (userId) => {
     try {
       // TODO: Reemplazar con llamada real a la API
@@ -195,6 +203,7 @@ export const useUserTable = () => {
     handleFilterChange,
     handleSort,
     handlePageChange,
+    handleItemsPerPageChange,
     toggleUserStatus,
     refetch: fetchUsers
   };

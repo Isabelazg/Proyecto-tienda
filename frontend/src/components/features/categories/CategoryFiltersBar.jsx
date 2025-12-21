@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select/Select';
+import { Select } from '@/components/ui/Select';
 import { SearchBar } from '@/components/common';
 
 export const CategoryFiltersBar = ({ 

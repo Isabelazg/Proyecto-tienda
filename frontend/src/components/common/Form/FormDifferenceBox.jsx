@@ -1,11 +1,13 @@
 /**
  * Componente para mostrar diferencias de caja (sobrante/faltante)
  * @param {number} diferencia - Diferencia calculada
+ * @param {string|number} displayValue - Valor a mostrar (opcional)
  * @param {object} IconComponents - Iconos para cada estado
  * @param {object} labels - Etiquetas para cada estado
  */
 const FormDifferenceBox = ({ 
   diferencia, 
+  displayValue,
   IconComponents = { exact: null, surplus: null, deficit: null },
   labels = { exact: "Caja Cuadrada", surplus: "Sobrante", deficit: "Faltante" }
 }) => {
@@ -49,7 +51,7 @@ const FormDifferenceBox = ({
         </h4>
       </div>
       <p className={`text-2xl font-bold ${valueColors[variant]}`}>
-        {diferencia}
+        {displayValue ?? diferencia}
       </p>
     </div>
   );

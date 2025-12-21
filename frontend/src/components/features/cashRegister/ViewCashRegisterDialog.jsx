@@ -2,10 +2,13 @@ import {
   FormViewDialog, 
   FormViewField,
   FormTransactionList,
-  FormSummaryCard
+  FormSummaryCard,
+  FormSummaryGrid,
+  FormViewGrid,
+  FormAmountText
 } from '@/components/common';
 import { DollarSign, Calendar, TrendingUp, TrendingDown } from 'lucide-react';
-import { Badge } from '@/components/ui/badge/Badge';
+import { Badge } from '@/components/ui/Badge';
 import { formatCurrency, formatDateTime } from '@/utils/format';
 
 export const ViewCashRegisterDialog = ({ 
@@ -37,13 +40,13 @@ export const ViewCashRegisterDialog = ({
   };
 
   const formatAmount = (transaction) => {
+    const variant = transaction.tipo === 'ingreso' ? 'info' : 'warning';
+
     return (
-      <span className={`text-lg font-bold ${
-        transaction.tipo === 'ingreso' ? 'text-blue-600' : 'text-orange-600'
-      }`}>
+      <FormAmountText variant={variant}>
         {transaction.tipo === 'ingreso' ? '+' : '-'}
         {formatCurrency(transaction.monto)}
-      </span>
+      </FormAmountText>
     );
   };
 
@@ -68,7 +71,7 @@ export const ViewCashRegisterDialog = ({
     >
       <div className="space-y-6">
         {/* Fechas */}
-        <div className="grid grid-cols-2 gap-4">
+        <FormViewGrid cols={2}>
           <FormViewField
             label="Fecha de Apertura"
             value={formatDateTime(cashRegister.fecha_apertura)}
@@ -77,43 +80,40 @@ export const ViewCashRegisterDialog = ({
             label="Fecha de Cierre"
             value={cashRegister.fecha_cierre ? formatDateTime(cashRegister.fecha_cierre) : 'En curso'}
           />
-        </div>
+        </FormViewGrid>
 
         {/* Resumen Financiero */}
-        <div>
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Resumen Financiero</h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <FormSummaryCard 
-              label="Monto Inicial" 
-              value={formatCurrency(cashRegister.monto_inicial)} 
-            />
-            <FormSummaryCard 
-              label="Total Ventas" 
-              value={formatCurrency(cashRegister.total_ventas)}
-              variant="success"
-            />
-            <FormSummaryCard 
-              label="Total Ingresos" 
-              value={formatCurrency(cashRegister.total_ingresos)}
-              variant="info"
-            />
-            <FormSummaryCard 
-              label="Total Egresos" 
-              value={formatCurrency(cashRegister.total_egresos)}
-              variant="warning"
-            />
-            <FormSummaryCard 
-              label="Efectivo Esperado" 
-              value={formatCurrency(cashRegister.efectivo_esperado)}
-              variant="lime"
-            />
-            <FormSummaryCard 
-              label="Efectivo Contado" 
-              value={cashRegister.efectivo_contado !== null ? formatCurrency(cashRegister.efectivo_contado) : 'N/A'}
-              variant="purple"
-            />
-          </div>
-        </div>
+        <FormSummaryGrid title="Resumen Financiero" gridClassName="grid-cols-2 md:grid-cols-3">
+          <FormSummaryCard 
+            label="Monto Inicial" 
+            value={formatCurrency(cashRegister.monto_inicial)} 
+          />
+          <FormSummaryCard 
+            label="Total Ventas" 
+            value={formatCurrency(cashRegister.total_ventas)}
+            variant="success"
+          />
+          <FormSummaryCard 
+            label="Total Ingresos" 
+            value={formatCurrency(cashRegister.total_ingresos)}
+            variant="info"
+          />
+          <FormSummaryCard 
+            label="Total Egresos" 
+            value={formatCurrency(cashRegister.total_egresos)}
+            variant="warning"
+          />
+          <FormSummaryCard 
+            label="Efectivo Esperado" 
+            value={formatCurrency(cashRegister.efectivo_esperado)}
+            variant="lime"
+          />
+          <FormSummaryCard 
+            label="Efectivo Contado" 
+            value={cashRegister.efectivo_contado !== null ? formatCurrency(cashRegister.efectivo_contado) : 'N/A'}
+            variant="purple"
+          />
+        </FormSummaryGrid>
 
         {/* Diferencia */}
         {cashRegister.diferencia !== null && (
