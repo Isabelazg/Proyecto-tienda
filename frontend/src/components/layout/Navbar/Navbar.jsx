@@ -80,7 +80,6 @@ function Navbar({ ...props }) {
                                 </div>
                                 <div>
                                     <span className="text-xl font-bold text-gray-900">Sistema Tienda</span>
-                                    <p className="text-xs text-gray-500">Panel Administrativo</p>
                                 </div>
                             </Link>
                         </SidebarHeader>

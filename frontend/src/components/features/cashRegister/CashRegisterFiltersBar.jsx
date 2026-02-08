@@ -1,6 +1,4 @@
-import { SearchBar } from '@/components/common';
-import { FormStatusBanner } from '@/components/common';
-import { Select } from '@/components/ui/Select';
+import { SearchBar, FormStatusBanner, FilterSelect } from '@/components/common';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, DollarSign, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
@@ -83,14 +81,14 @@ export const CashRegisterFiltersBar = ({
 
           {/* Filtro por Estado */}
           <div>
-            <Select
-              value={filters.estado}
+            <FilterSelect
+              value={filters.estado || ''}
               onChange={(e) => onFilterChange('estado', e.target.value)}
             >
               <option value="">Todos los estados</option>
               <option value="abierta">Abiertas</option>
               <option value="cerrada">Cerradas</option>
-            </Select>
+            </FilterSelect>
           </div>
 
           {/* Fecha desde */}

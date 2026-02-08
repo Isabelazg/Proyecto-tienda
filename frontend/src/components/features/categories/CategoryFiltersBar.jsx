@@ -1,7 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/Select';
-import { SearchBar } from '@/components/common';
+import { SearchBar, FilterSelect } from '@/components/common';
 
 export const CategoryFiltersBar = ({ 
   filters, 
@@ -25,14 +24,14 @@ export const CategoryFiltersBar = ({
 
         {/* Status Filter */}
         <div>
-          <Select
-            value={filters.status}
+          <FilterSelect
+            value={filters.status || 'all'}
             onChange={(e) => onFilterChange('status', e.target.value)}
           >
             <option value="all">Todos los estados</option>
             <option value="active">Activas</option>
             <option value="inactive">Inactivas</option>
-          </Select>
+          </FilterSelect>
         </div>
       </div>
 
